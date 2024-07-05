@@ -13,27 +13,28 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 
-
 function CustomerForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        name: '',
-        address: '',
+        userName: '',
+        fullName: '',
+        email: '',
         phone: '',
-        point: '',
         gender: 'female',
-
+        address: '',
+        point: 0,
     };
 
     const [formState, setFormState] = React.useState(initialFormState);
 
     const handleChange = (e) => {
-        setFormState({ ...formState, [e.target.name]: e.target.value })
+        const { name, value } = e.target;
+        setFormState({ ...formState, [name]: value });
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
-        onSubmit(formState); // Gọi addCustomer
-        setFormState(initialFormState); // Clear các trường của form sau khi submit
+        e.preventDefault(); 
+        onSubmit(formState); 
+        setFormState(initialFormState); 
         onClose();
     };
 
@@ -43,49 +44,62 @@ function CustomerForm({ open, onClose, onSubmit }) {
             <DialogContent>
                 <TextField
                     margin="dense"
-                    name="name"
-                    label="Name"
-                    value={formState.name}
+                    name="userName"
+                    label="User Name"
                     type="text"
+                    value={formState.userName}
                     fullWidth
                     onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
                 />
                 <TextField
                     margin="dense"
-                    name="address"
-                    label="Address"
-                    value={formState.address}
+                    name="fullName"
+                    label="Full Name"
                     type="text"
+                    value={formState.fullName}
                     fullWidth
                     onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
                 />
                 <TextField
                     margin="dense"
-                    name="phoneNumber"
+                    name="email"
+                    label="Email"
+                    type="email"
+                    value={formState.email}
+                    fullWidth
+                    onChange={handleChange}
+                />
+                <TextField
+                    margin="dense"
+                    name="phone"
                     label="Phone Number"
-                    value={formState.phoneNumber}
                     type="text"
+                    value={formState.phone}
                     fullWidth
                     onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
                 />
                 <TextField
                     margin="dense"
                     name="point"
                     label="Point"
+                    type="number"
                     value={formState.point}
-                    type="point"
                     fullWidth
                     onChange={handleChange}
-                    InputProps={{ style: { marginBottom: 10 } }}
+                />
+                <TextField
+                    margin="dense"
+                    name="address"
+                    label="Address"
+                    type="text"
+                    value={formState.address}
+                    fullWidth
+                    onChange={handleChange}
                 />
                 <FormControl>
-                    <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+                    <FormLabel>Gender</FormLabel>
                     <RadioGroup
                         row
-                        aria-labelledby="demo-row-radio-buttons-group-label"
                         name="gender"
                         value={formState.gender}
                         onChange={handleChange}

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -20,18 +22,18 @@ import Iconify from 'src/components/iconify';
 import CustomerEditForm from './customer-edit-model';
 import CustomerDeleteForm from './customer-del-model';
 
-
-// ----------------------------------------------------------------------
-
 export default function UserTableRow({
   selected,
-  CusID,
-  name,
-  address,
-  phoneNumber,
-  point,
+  customerId,
+  userName,
+  fullName,
+  email,
+  phone,
   gender,
+  address,
+  point,
   handleClick,
+  refreshCustomerList,
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -63,8 +65,38 @@ export default function UserTableRow({
     setEditOpen(false);
   };
 
-  const onSubmit = (updatedData) => {
-    handleEditClose();
+  const onupdateSubmit = async (updatedData) => {
+    try {
+      const response = await axios.put(`http://localhost:5188/api/Customer/UpdateCustomer/${updatedData.customerId}`, updatedData);
+      if (response.status === 200) {
+        handleEditClose();
+        toast.success('Update successful!', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+          style: { backgroundColor: 'green' }
+        });
+        refreshCustomerList();
+      } else {
+        throw new Error('Unexpected response status');
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      toast.error('Error updating customer!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+        style: { backgroundColor: 'red' }
+      });
+    }
   };
 
   const handleDeleteOpen = () => {
@@ -77,8 +109,38 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
-  const onDelete = () => {
-    handleDeleteClose();
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:5188/api/Customer/DeleteCustomer/${id}`);
+      if (response.status === 200) {
+        handleDeleteClose();
+        toast.success('Delete successful!', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+          style: { backgroundColor: 'green' }
+        });
+        refreshCustomerList();
+      } else {
+        throw new Error('Unexpected response status');
+      }
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      toast.error('Error deleting customer!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+        style: { backgroundColor: 'red' }
+      });
+    }
   };
 
   return (
@@ -88,13 +150,13 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{name}</TableCell>
+        <TableCell>{fullName}</TableCell>
 
         <TableCell>{address}</TableCell>
 
-        <TableCell>{phoneNumber}</TableCell>
+        <TableCell>{phone}</TableCell>
 
-        <TableCell> {point} </TableCell>
+        <TableCell>{point}</TableCell>
 
         <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
@@ -111,16 +173,24 @@ export default function UserTableRow({
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">Name:</Typography>
-              <Typography>{name}</Typography>
+              <Typography variant="h6">Full Name:</Typography>
+              <Typography>{userName}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Full Name:</Typography>
+              <Typography>{fullName}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Address:</Typography>
               <Typography>{address}</Typography>
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="h6">Address:</Typography>
+              <Typography>{email}</Typography>
+            </Grid>
+            <Grid item xs={12}>
               <Typography variant="h6">Phone Number:</Typography>
-              <Typography>{phoneNumber}</Typography>
+              <Typography>{phone}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Point:</Typography>
@@ -133,12 +203,9 @@ export default function UserTableRow({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>
-            Close
-          </Button>
+          <Button onClick={handleDialogClose}>Close</Button>
         </DialogActions>
       </Dialog>
-
 
       <Popover
         open={!!open}
@@ -164,28 +231,39 @@ export default function UserTableRow({
       <CustomerEditForm
         open={editOpen}
         onClose={handleEditClose}
-        customer={{ CusID, name, address, phoneNumber, point, gender, }}
-        onSubmit={onSubmit}
+        customer={{
+          customerId,
+          userName,
+          fullName,
+          email,
+          phone,
+          gender,
+          address,
+          point,
+        }}
+        onSubmit={onupdateSubmit}
       />
 
       <CustomerDeleteForm
         open={deleteOpen}
         onClose={handleDeleteClose}
-        onDelete={onDelete}
-        customer={{ CusID, name, address, phoneNumber, point, gender, }}
+        onDelete={handleDelete}
+        customer={{ customerId, fullName, address, phone, point, gender }}
       />
-
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  CusID: PropTypes.any,
-  gender: PropTypes.any,
+  customerId: PropTypes.any,
+  userName: PropTypes.any,
+  fullName: PropTypes.any,
   address: PropTypes.any,
+  email: PropTypes.any,
   handleClick: PropTypes.func,
   point: PropTypes.any,
-  name: PropTypes.any,
-  phoneNumber: PropTypes.any,
+  gender: PropTypes.any,
+  phone: PropTypes.any,
   selected: PropTypes.any,
+  refreshCustomerList: PropTypes.func.isRequired,
 };

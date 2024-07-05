@@ -19,6 +19,7 @@ export default function NewModal({ show, handleClose, createJew }) {
         initialValues: {
             jewelryTypeId: '',
             name: '',
+            imageUrl: '',
             jewelryMaterial: {
                 gemId: '',
                 goldId: '',
@@ -92,6 +93,26 @@ export default function NewModal({ show, handleClose, createJew }) {
                                     helperText={formik.touched.name && formik.errors.name}
                                     sx={{
                                         width: 300,
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': {
+                                                borderColor: 'gray',
+                                            },
+                                        },
+                                    }}
+                                />
+                            </InputGroup>
+                            <InputGroup className="mb-4">
+                                <TextField
+                                    label="Image URL"
+                                    variant="outlined"
+                                    name="imageUrl"
+                                    value={formik.values.imageUrl}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.imageUrl && Boolean(formik.errors.imageUrl)}
+                                    helperText={formik.touched.imageUrl && formik.errors.imageUrl}
+                                    sx={{
+                                        width: 300, 
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {
                                                 borderColor: 'gray',
