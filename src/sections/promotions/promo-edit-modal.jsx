@@ -7,27 +7,28 @@ import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import { toast } from 'react-toastify';
 
 function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
   const [formState, setFormState] = React.useState({
     type: promotion ? promotion.type : '',
     discountRate: promotion ? promotion.discountRate : '',
     startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
-    endDate:promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
-    approveManager: promotion ? promotion.approveManager : '',
+    endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
     description: promotion ? promotion.description : '',
   });
 
-  console.log('promotion', promotion);
-  console.log('formState', formState);
+  const [errors, setErrors] = React.useState({});
+
   React.useEffect(() => {
     if (promotion) {
       setFormState({
         type: promotion.type,
         discountRate: promotion.discountRate,
-        startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
+        startDate: promotion.startDate
+          ? new Date(promotion.startDate).toISOString().split('T')[0]
+          : '',
         endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
-        approveManager: promotion.approveManager,
         description: promotion.description,
       });
     }
@@ -37,10 +38,37 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
     setFormState({ ...formState, [event.target.name]: event.target.value });
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formState.type) newErrors.type = 'Type is required';
+    if (!formState.discountRate) {
+      newErrors.discountRate = 'Discount rate is required';
+    } else if (formState.discountRate < 0 || formState.discountRate > 100 ||Number.isNaN(formState.discountRate))  {
+      newErrors.discountRate = 'Discount rate cannot be negative and must be less than 100';
+    }
+    if (!formState.startDate) newErrors.startDate = 'Start date is required';
+    if (!formState.endDate) newErrors.endDate = 'End date is required';
+    if (
+      formState.startDate &&
+      formState.endDate &&
+      new Date(formState.startDate) > new Date(formState.endDate)
+    ) {
+      newErrors.startDate = 'Start date must be before end date';
+    }
+    if (!formState.description) newErrors.description = 'Description is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(formState);
-    onClose();
+    if (validate()) {
+      onSubmit(formState);
+      toast.success('Promotion updated');
+      onClose();
+    } else {
+      toast.error('Please fix the validation errors');
+    }
   };
 
   return (
@@ -55,6 +83,8 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           type="text"
           fullWidth
           onChange={handleChange}
+          error={!!errors.type}
+          helperText={errors.type}
           InputProps={{ style: { marginBottom: 10 } }}
         />
         <TextField
@@ -62,9 +92,11 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           name="discountRate"
           label="Discount Rate"
           value={formState.discountRate}
-          type="text"
+          type="number"
           fullWidth
           onChange={handleChange}
+          error={!!errors.discountRate}
+          helperText={errors.discountRate}
           InputProps={{ style: { marginBottom: 10 } }}
         />
         <TextField
@@ -75,6 +107,8 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           type="date"
           fullWidth
           onChange={handleChange}
+          error={!!errors.startDate}
+          helperText={errors.startDate}
           InputProps={{ style: { marginBottom: 10 } }}
         />
         <TextField
@@ -85,16 +119,8 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           type="date"
           fullWidth
           onChange={handleChange}
-          InputProps={{ style: { marginBottom: 10 } }}
-        />
-        <TextField
-          margin="dense"
-          name="approveManager"
-          label="Approval Manager"
-          value={formState.approveManager}
-          type="text"
-          fullWidth
-          onChange={handleChange}
+          error={!!errors.endDate}
+          helperText={errors.endDate}
           InputProps={{ style: { marginBottom: 10 } }}
         />
         <TextField
@@ -105,6 +131,8 @@ function PromotionEditForm({ open, onClose, onSubmit, promotion }) {
           type="text"
           fullWidth
           onChange={handleChange}
+          error={!!errors.description}
+          helperText={errors.description}
           InputProps={{ style: { marginBottom: 10 } }}
         />
       </DialogContent>

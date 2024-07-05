@@ -29,7 +29,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 export default function PromotionView() {
   const [promotion, setPromotion] = useState([]);
-  console.log("promotion", promotion)
+  console.log('promotion', promotion);
 
   const [page, setPage] = useState(0);
 
@@ -47,12 +47,12 @@ export default function PromotionView() {
 
   useEffect(() => {
     getPromotion();
-  }, [])
+  }, []);
 
   const getPromotion = async () => {
-    const res = await axios.get("http://localhost:5188/api/Promotion/GetPromotions");
+    const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
     setPromotion(res.data);
-  }
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -117,14 +117,54 @@ export default function PromotionView() {
 
   const handleNewPromotionClick = async (newPromotionData) => {
     // addPromotion(newPromotionData);
-    const res = await axios.post("http://localhost:5188/api/Promotion/AddNewPromotion", newPromotionData);
+    const formattedData = {
+      ...newPromotionData,
+      startDate: new Date(newPromotionData.startDate).toISOString(),
+      endDate: new Date(newPromotionData.endDate).toISOString(),
+    };
+
+    const res = await axios.post(
+      'http://localhost:5188/api/Promotion/AddNewPromotion?userId=2',
+      formattedData
+    );
     if (res.data === 1) {
-      toast.success("Create promotion success")
+      toast.success('Create promotion success');
+      getPromotion();
     } else {
-      toast.error("Create promotion fail")
+      toast.error('Create promotion fail');
     }
     setShowPromotionForm(false);
   };
+
+  const handleDeletePromotionClick = async (promotionId) => {
+    const res = await axios.delete(
+      `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`
+    );
+    if (res.data === 1) {
+      toast.success('Delete promotion success');
+      getPromotion();
+    } else {
+      toast.error('Delete promotion fail');
+    }
+  };
+
+  const handleUpdatePromotionClick = async (updatedData) => {
+    const formattedData = {
+      ...updatedData,
+      startDate: new Date(updatedData.startDate).toISOString(),
+      endDate: new Date(updatedData.endDate).toISOString(),
+    };
+    const res = await axios.put(
+      `http://localhost:5188/api/Promotion/UpdatePromotion?id=${updatedData.promotionId}`,
+      formattedData
+    );
+    if (res.data === 1) {
+      toast.success('Edit promotion success');
+      getPromotion();
+    } else {
+      toast.error('Edit promotion fail');
+    }
+  }
 
   return (
     <Container>
@@ -141,7 +181,9 @@ export default function PromotionView() {
         </Button>
       </Stack>
 
-      <PromotionForm open={showPromotionForm} onClose={handleClosePromotionForm}
+      <PromotionForm
+        open={showPromotionForm}
+        onClose={handleClosePromotionForm}
         onSubmit={handleNewPromotionClick}
       />
 
@@ -163,11 +205,13 @@ export default function PromotionView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'promotionId', label: 'PromotionId' },
+                  { id: 'promotionId', label: 'Promotion Id' },
                   { id: 'type', label: 'Type' },
-                  { id: 'discountRate', label: 'DiscountRate' },
-                  { id: 'startDate', label: 'StartDate' },
-                  { id: 'endDate', label: 'EndDate' },
+                  { id: 'description', label: 'Description' },
+                  // { id: 'approveManager', label: 'Approve Manager' },
+                  { id: 'discountRate', label: 'Discount Rate' },
+                  { id: 'startDate', label: 'Start Date' },
+                  { id: 'endDate', label: 'End Date' },
                   { id: '', label: '' },
                 ]}
               />
@@ -179,7 +223,7 @@ export default function PromotionView() {
                       key={row.id}
                       promotionId={row.promotionId}
                       type={row.type}
-                      approveManager={row.approveManager}
+                      // approveManager={row.approveManager}
                       description={row.description}
                       discountRate={row.discountRate}
                       startDate={row.startDate}
