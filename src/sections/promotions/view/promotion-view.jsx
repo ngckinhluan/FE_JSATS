@@ -115,56 +115,72 @@ export default function PromotionView() {
     setShowPromotionForm(false);
   };
 
+  const nameid = localStorage.getItem('NAMEID');
+
   const handleNewPromotionClick = async (newPromotionData) => {
-    // addPromotion(newPromotionData);
+    // Check if user is authorized to create promotions (e.g., only manager with nameid === 2)
+    if (nameid !== '2') {
+      toast.error('Only manager can add promotion!');
+      return; // Exit function early if not authorized
+    }
+
+    // Format date fields to ISO string format
     const formattedData = {
       ...newPromotionData,
       startDate: new Date(newPromotionData.startDate).toISOString(),
       endDate: new Date(newPromotionData.endDate).toISOString(),
     };
 
-    const res = await axios.post(
-      'http://localhost:5188/api/Promotion/AddNewPromotion?userId=2',
-      formattedData
-    );
-    if (res.data === 1) {
-      toast.success('Create promotion success');
-      getPromotion();
-    } else {
-      toast.error('Create promotion fail');
+    try {
+      // Send POST request to create new promotion
+      const res = await axios.post(
+        `http://localhost:5188/api/Promotion/AddNewPromotion?userId=${nameid}`,
+        formattedData
+      );
+
+      // Handle response based on server's success or failure
+      if (res.data === 1) {
+        toast.success('Create promotion success');
+        getPromotion(); // Refresh promotions list
+      } else {
+        toast.error('Create promotion fail');
+      }
+    } catch (error) {
+      toast.error('Error creating promotion');
     }
+
+    // Close the promotion form after submission
     setShowPromotionForm(false);
   };
+  // const handleDeletePromotionClick = async (promotionId) => {
+  //   const res = await axios.delete(
+  //     `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`
+  //   );
+  //   if (res.data === 1) {
+  //     toast.success('Delete promotion success');
+  //     getPromotion();
+  //   } else {
+  //     toast.error('Delete promotion fail');
+  //   }
+  // };
 
-  const handleDeletePromotionClick = async (promotionId) => {
-    const res = await axios.delete(
-      `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`
-    );
-    if (res.data === 1) {
-      toast.success('Delete promotion success');
-      getPromotion();
-    } else {
-      toast.error('Delete promotion fail');
-    }
-  };
-
-  const handleUpdatePromotionClick = async (updatedData) => {
-    const formattedData = {
-      ...updatedData,
-      startDate: new Date(updatedData.startDate).toISOString(),
-      endDate: new Date(updatedData.endDate).toISOString(),
-    };
-    const res = await axios.put(
-      `http://localhost:5188/api/Promotion/UpdatePromotion?id=${updatedData.promotionId}`,
-      formattedData
-    );
-    if (res.data === 1) {
-      toast.success('Edit promotion success');
-      getPromotion();
-    } else {
-      toast.error('Edit promotion fail');
-    }
-  }
+  // const handleUpdatePromotionClick = async (updatedData) => {
+  //   const formattedData = {
+  //     ...updatedData,
+  //     startDate: new Date(updatedData.startDate).toISOString(),
+  //     endDate: new Date(updatedData.endDate).toISOString(),
+  //   };
+  //   const res = await axios.put(
+  //     `http://localhost:5188/api/Promotion/UpdatePromotion?id=${updatedData.promotionId}`,
+  //     formattedData
+  //   );
+  //   if (res.data === 1) {
+  //     toast.success('Edit promotion success');
+  //     getPromotion();
+  //   } else {
+  //     toast.error('Edit promotion fail');
+  //   }
+  // }
 
   return (
     <Container>

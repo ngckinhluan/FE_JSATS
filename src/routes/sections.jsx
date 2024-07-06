@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+import { useAuth } from 'src/contexts/AuthContext';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
@@ -12,12 +13,12 @@ export const Jewellery = lazy(() => import('src/pages/jewellery'));
 export const Staff = lazy(() => import('src/pages/staff'));
 export const Bill = lazy(() => import('src/pages/bill'));
 export const GoldPrice = lazy(() => import('src/pages/goldprice'));
-export const GoldPricesTable = lazy(() => import('src/sections/goldprice/goldprice-to-fullscreen')); 
+export const GoldPricesTable = lazy(() => import('src/sections/goldprice/goldprice-to-fullscreen'));
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAuth();
   const routes = useRoutes([
     {
       path: '/',
@@ -36,7 +37,7 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />},
+        { element: <IndexPage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'promotion', element: <Promotion /> },
         { path: 'customer', element: <Customer /> },
@@ -45,7 +46,7 @@ export default function Router() {
         { path: 'bill', element: <Bill /> },
         { path: 'goldprice', element: <GoldPrice /> },
         { path: 'dashboard', element: <IndexPage /> },
-        { path: 'tv', element: <GoldPricesTable /> },  
+        { path: 'tv', element: <GoldPricesTable /> },
       ],
     },
     {
