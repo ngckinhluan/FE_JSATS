@@ -47,9 +47,10 @@ const handleClick = async () => {
       localStorage.setItem("TOKEN", token);
       const decodedToken = jwtDecode(token);
       const roleId = decodedToken.role; 
-      localStorage.setItem("ROLE", roleId);
+      // localStorage.setItem("ROLE", roleId);
       localStorage.setItem("SUB", decodedToken.sub); 
       localStorage.setItem("NAMEID", decodedToken.nameid);
+      localStorage.setItem("EMAIL", decodedToken.email);
       router.push('/dashboard');
       toast.success('You have successfully logged in. Welcome!');
     } else {
