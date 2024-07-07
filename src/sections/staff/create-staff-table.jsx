@@ -13,25 +13,24 @@ import { InputLabel, FormControl } from '@mui/material';
 
 function StaffForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        staffId: '',
-        userName: '',
+        roleId: '3', // Default to 'Staff' role
+        username: '',
+        fullName: '',
+        gender: '', // Assuming gender is not required
         email: '',
-        password: '',
-        roleId: '',
-        counterId: '',
-        status: '',
+        password: ''
     };
 
     const [formState, setFormState] = React.useState(initialFormState);
 
     const handleChange = (e) => {
-        setFormState({ ...formState, [e.target.name]: e.target.value })
+        setFormState({ ...formState, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
-        onSubmit(formState); // Gọi addPromotion
-        setFormState(initialFormState); // Clear các trường của form sau khi submit
+        e.preventDefault();
+        onSubmit(formState);
+        setFormState(initialFormState);
         onClose();
     };
 
@@ -42,19 +41,21 @@ function StaffForm({ open, onClose, onSubmit }) {
                 <TextField
                     autoFocus
                     margin="dense"
-                    name="staffId"
-                    label="Staff ID"
+                    name="username"
+                    label="User Name"
                     type="text"
                     fullWidth
+                    value={formState.username}
                     onChange={handleChange}
                 />
 
                 <TextField
                     margin="dense"
-                    name="userName"
-                    label="User Name"
+                    name="fullName"
+                    label="Full Name"
                     type="text"
                     fullWidth
+                    value={formState.fullName}
                     onChange={handleChange}
                 />
 
@@ -62,8 +63,9 @@ function StaffForm({ open, onClose, onSubmit }) {
                     margin="dense"
                     name="email"
                     label="Email"
-                    type="text"
+                    type="email"
                     fullWidth
+                    value={formState.email}
                     onChange={handleChange}
                 />
 
@@ -71,48 +73,38 @@ function StaffForm({ open, onClose, onSubmit }) {
                     margin="dense"
                     name="password"
                     label="Password"
-                    type="text"
+                    type="password"
                     fullWidth
+                    value={formState.password}
                     onChange={handleChange}
                 />
 
                 <FormControl fullWidth margin="dense">
-                    <InputLabel id="role-label">Role ID</InputLabel>
+                    <InputLabel id="role-label">Role</InputLabel>
                     <Select
                         labelId="role-label"
                         name="roleId"
-                        label="Role ID"
+                        label="Role"
                         value={formState.roleId}
                         onChange={handleChange}
                     >
-                        <MenuItem value="Staff">Staff</MenuItem>
-                        <MenuItem value="Admin">Admin</MenuItem>
-                        <MenuItem value="Manager">Manager</MenuItem>
+                        <MenuItem value="3">Staff</MenuItem>
+                        <MenuItem value="1">Admin</MenuItem>
+                        <MenuItem value="2">Manager</MenuItem>
                     </Select>
                 </FormControl>
 
-                <TextField
+                {/* Assuming gender is optional */}
+                {/* <TextField
                     margin="dense"
-                    name="counterId"
-                    label="Counter ID"
+                    name="gender"
+                    label="Gender"
                     type="text"
                     fullWidth
+                    value={formState.gender}
                     onChange={handleChange}
-                />
+                /> */}
 
-                <FormControl fullWidth margin="dense">
-                    <InputLabel id="status-label">Status</InputLabel>
-                    <Select
-                        labelId="status-label"
-                        name="status"
-                        label="Status"
-                        value={formState.status}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="active">Active</MenuItem>
-                        <MenuItem value="inactive">Inactive</MenuItem>
-                    </Select>
-                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>

@@ -1,11 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { Grid, Button, Dialog ,Typography,DialogTitle ,DialogContent, DialogActions } from '@mui/material';
+import { Grid, Button, Dialog, Typography, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { toast } from 'react-toastify';
 
 export default function StaffDeleteForm({ open, onClose, onDelete, staff }) {
-  const handleDeleteClick = () => {
-    onDelete(staff.staffId);
+  const handleDeleteClick = async () => {
+    try {
+      await onDelete(staff.userId);
+      toast.success(`Staff member ${staff.username} deleted successfully`);
+      onClose();
+    } catch (error) {
+      toast.error(`Failed to delete staff member ${staff.username}`);
+      console.error('Delete error:', error);
+    }
   };
 
   return (
@@ -14,32 +21,28 @@ export default function StaffDeleteForm({ open, onClose, onDelete, staff }) {
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h6">Staff ID:</Typography>
-            <Typography>{staff.staffId}</Typography>
+            <Typography variant="h6">User ID:</Typography>
+            <Typography>{staff.userId}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Username:</Typography>
-            <Typography>{staff.userName}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Password:</Typography>
-            <Typography>{staff.password}</Typography>
+            <Typography>{staff.username}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Email:</Typography>
             <Typography>{staff.email}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6">Role ID:</Typography>
-            <Typography>{staff.roleId}</Typography>
+            <Typography variant="h6">Role Name:</Typography>
+            <Typography>{staff.roleName}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6">Counter ID:</Typography>
-            <Typography>{staff.counterId}</Typography>
+            <Typography variant="h6">Counter Number:</Typography>
+            <Typography>{staff.counterNumber}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Status:</Typography>
-            <Typography>{staff.status}</Typography>
+            <Typography>{staff.status ? 'Active' : 'Inactive'}</Typography>
           </Grid>
         </Grid>
       </DialogContent>
@@ -60,12 +63,12 @@ StaffDeleteForm.propTypes = {
   onClose: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   staff: PropTypes.shape({
-    staffId: PropTypes.string,
-    userName: PropTypes.string,
-    email: PropTypes.string,
-    roleId: PropTypes.string,
-    counterId: PropTypes.number,
-    status: PropTypes.string,
-    password: PropTypes.string,
+    userId: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    roleName: PropTypes.string.isRequired,
+    counterNumber: PropTypes.number.isRequired,
+    status: PropTypes.bool.isRequired,
   }).isRequired,
 };
+
