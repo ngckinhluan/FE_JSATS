@@ -1,32 +1,33 @@
+import axios from 'axios';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
-
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import { Grid, Button, Dialog, Typography ,DialogTitle, DialogContent ,DialogActions } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-
 import StaffEditForm from './staff-edit-modal';
 import StaffDeleteForm from './staff-del-modal';
 
-// ----------------------------------------------------------------------
-
 export default function UserTableRow({
-  selected,
-  staffId,
+  userId,
   userName,
   email,
-  password,
-  roleId,
-  counterId,
+  roleName,
+  counterNumber,
+  selected,
   handleClick,
-  status,
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -58,10 +59,6 @@ export default function UserTableRow({
     setEditOpen(false);
   };
 
-  const onSubmit = (updatedData) => {
-    handleEditClose();
-  };
-
   const handleDeleteOpen = () => {
     setDeleteOpen(true);
     handleCloseMenu();
@@ -72,8 +69,48 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
-  const onDelete = () => {
-    handleDeleteClose();
+  const onSubmit = async (updatedData) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:5188/api/User/UpdateUser/${userId}`,
+        updatedData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success('Staff updated successfully');
+        window.location.reload(); // Refresh the page after successful edit
+      } else {
+        toast.error('Failed to update staff');
+      }
+      handleEditClose();
+    } catch (error) {
+      console.error('Error updating staff:', error);
+      toast.error('Error updating staff');
+    }
+  };
+
+  const onDelete = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:5188/api/User/DeleteUser/${userId}`//http://localhost:5188/api/User/UpdateUser/OT91ftV
+      );
+      if (res.status === 200) {
+        
+        window.location.reload(); // Refresh the page after successful delete
+        toast.success('Staff deleted successfully');
+      } else {
+        toast.error('Failed to delete staff');
+      }
+      handleDeleteClose();
+    } catch (error) {
+      console.error('Error deleting staff:', error);
+      toast.error('Error deleting staff');
+    }
   };
 
   return (
@@ -82,16 +119,11 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-
         <TableCell>{userName}</TableCell>
         <TableCell>{email}</TableCell>
-        <TableCell>{password}</TableCell>
-        <TableCell>{roleId}</TableCell>
-        <TableCell>
-          <Label color={(status === 'inactive' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
-
-        <TableCell align='right'>
+        <TableCell>{roleName}</TableCell>
+        <TableCell>{counterNumber}</TableCell>
+        <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
           </Button>
@@ -106,39 +138,29 @@ export default function UserTableRow({
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">ID:</Typography>
-              <Typography>{staffId}</Typography>
+              <Typography variant="h6">User ID:</Typography>
+              <Typography>{userId}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">User Name:</Typography>
+              <Typography variant="h6">Username:</Typography>
               <Typography>{userName}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Counter ID:</Typography>
-              <Typography>{counterId}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Email:</Typography>
               <Typography>{email}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Password:</Typography>
-              <Typography>{password}</Typography>
+              <Typography variant="h6">Role Name:</Typography>
+              <Typography>{roleName}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Role ID:</Typography>
-              <Typography>{roleId}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Status:</Typography>
-              <Typography><Label color={(status === 'inactive' && 'error') || 'success'}>{status}</Label></Typography>
+              <Typography variant="h6">Counter Number:</Typography>
+              <Typography>{counterNumber}</Typography>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>
-            Close
-          </Button>
+          <Button onClick={handleDialogClose}>Close</Button>
         </DialogActions>
       </Dialog>
 
@@ -166,15 +188,7 @@ export default function UserTableRow({
       <StaffEditForm
         open={editOpen}
         onClose={handleEditClose}
-        staff={{
-          staffId,
-          userName,
-          email,
-          password,
-          roleId,
-          counterId,
-          status
-        }}
+        staff={{ userId, username: userName, email, roleName, counterNumber }}
         onSubmit={onSubmit}
       />
 
@@ -182,28 +196,19 @@ export default function UserTableRow({
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={onDelete}
-        staff={{
-          staffId,
-          userName,
-          email,
-          password,
-          roleId,
-          counterId,
-          status
-        }}
+        staff={{ userId, username: userName, email, roleName, counterNumber }}
       />
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  staffId: PropTypes.string,
-  userName: PropTypes.string,
-  email: PropTypes.string,
-  password: PropTypes.string,
-  handleClick: PropTypes.func,
-  roleId: PropTypes.string,
-  counterId: PropTypes.number,
-  selected: PropTypes.any,
-  status: PropTypes.string,
+  userId: PropTypes.string.isRequired,
+  userName: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  roleName: PropTypes.string.isRequired,
+  counterNumber: PropTypes.number.isRequired,
+  selected: PropTypes.bool.isRequired,
+  handleClick: PropTypes.func.isRequired,
 };
+
