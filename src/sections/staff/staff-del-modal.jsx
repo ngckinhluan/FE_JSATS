@@ -40,10 +40,7 @@ export default function StaffDeleteForm({ open, onClose, onDelete, staff }) {
             <Typography variant="h6">Counter Number:</Typography>
             <Typography>{staff.counterNumber}</Typography>
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Status:</Typography>
-            <Typography>{staff.status ? 'Active' : 'Inactive'}</Typography>
-          </Grid>
+          
         </Grid>
       </DialogContent>
       <DialogActions>

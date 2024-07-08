@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -10,38 +9,66 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { InputLabel, FormControl } from '@mui/material';
+import { toast } from 'react-toastify';
 
 function StaffEditForm({ open, onClose, onSubmit, staff }) {
   const [formState, setFormState] = React.useState({
-    username: staff ? staff.username : '',
-    email: staff ? staff.email : '',
-    password: staff ? staff.password : '',
-    roleId: staff ? staff.roleId : '',
-    fullName: staff ? staff.fullName : '',
-    gender: staff ? staff.gender : '',
+    username: '',
+    email: '',
+    password: '',
+    roleId: '',
+    fullName: '',
+    gender: '',
   });
+
+  const [errors, setErrors] = React.useState({});
 
   React.useEffect(() => {
     if (staff) {
       setFormState({
-        username: staff.username,
-        email: staff.email,
-        password: staff.password,
-        roleId: staff.roleId,
-        fullName: staff.fullName,
-        gender: staff.gender,
+        username: staff.username || '',
+        email: staff.email || '',
+        password: staff.password || '',
+        roleId: staff.roleId || '',
+        fullName: staff.fullName || '',
+        gender: staff.gender || '',
       });
     }
   }, [staff]);
 
   const handleChange = (event) => {
-    setFormState({ ...formState, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      [name]: value,
+    }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formState.username) newErrors.username = 'Username is required';
+    if (!formState.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formState.email)) {
+      newErrors.email = 'Email address is invalid';
+    }
+    if (!formState.password) newErrors.password = 'Password is required';
+    if (!formState.roleId) newErrors.roleId = 'Role is required';
+    if (!formState.fullName) newErrors.fullName = 'Full Name is required';
+    if (!formState.gender) newErrors.gender = 'Gender is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(formState);
-    onClose();
+    if (validate()) {
+      onSubmit(formState);
+      toast.success('Staff updated');
+      onClose();
+    } else {
+      toast.error('Please fix the validation errors');
+    }
   };
 
   return (
@@ -57,6 +84,9 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
           fullWidth
           onChange={handleChange}
           value={formState.username}
+          error={!!errors.username}
+          helperText={errors.username}
+          InputProps={{ style: { marginBottom: 10 } }}
         />
 
         <TextField
@@ -67,6 +97,9 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
           fullWidth
           onChange={handleChange}
           value={formState.email}
+          error={!!errors.email}
+          helperText={errors.email}
+          InputProps={{ style: { marginBottom: 10 } }}
         />
 
         <TextField
@@ -77,6 +110,9 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
           fullWidth
           onChange={handleChange}
           value={formState.password}
+          error={!!errors.password}
+          helperText={errors.password}
+          InputProps={{ style: { marginBottom: 10 } }}
         />
 
         <TextField
@@ -87,6 +123,9 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
           fullWidth
           onChange={handleChange}
           value={formState.fullName}
+          error={!!errors.fullName}
+          helperText={errors.fullName}
+          InputProps={{ style: { marginBottom: 10 } }}
         />
 
         <TextField
@@ -97,6 +136,9 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
           fullWidth
           onChange={handleChange}
           value={formState.gender}
+          error={!!errors.gender}
+          helperText={errors.gender}
+          InputProps={{ style: { marginBottom: 10 } }}
         />
 
         <FormControl fullWidth margin="dense">
@@ -107,6 +149,8 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
             label="Role"
             value={formState.roleId}
             onChange={handleChange}
+            error={!!errors.roleId}
+            helpertext={errors.roleId}
           >
             <MenuItem value="Staff">Staff</MenuItem>
             <MenuItem value="Admin">Admin</MenuItem>
@@ -137,3 +181,5 @@ StaffEditForm.propTypes = {
 };
 
 export default StaffEditForm;
+
+

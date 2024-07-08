@@ -177,7 +177,7 @@ export default function StaffView() {
                   { id: 'email', label: 'Email' },
                   { id: 'roleName', label: 'Role' },
                   { id: 'counterNumber', label: 'Counter Number' },
-                  { id: 'status', label: 'Status' },
+                  
                   { id: '', label: '' },
                 ]}
               />
@@ -192,7 +192,7 @@ export default function StaffView() {
                       email={row.email}
                       roleName={row.roleName}
                       counterNumber={row.counterNumber}
-                      status={row.status}
+                     
                       selected={selected.indexOf(row.username) !== -1}
                       handleClick={(event) => handleClick(event, row.username)}
                     />

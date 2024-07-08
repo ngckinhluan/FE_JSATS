@@ -26,7 +26,6 @@ export default function UserTableRow({
   email,
   roleName,
   counterNumber,
-  status,
   selected,
   handleClick,
 }) {
@@ -123,7 +122,6 @@ export default function UserTableRow({
         <TableCell>{email}</TableCell>
         <TableCell>{roleName}</TableCell>
         <TableCell>{counterNumber}</TableCell>
-        <TableCell>{status ? 'Active' : 'Inactive'}</TableCell>
         <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
@@ -158,10 +156,6 @@ export default function UserTableRow({
               <Typography variant="h6">Counter Number:</Typography>
               <Typography>{counterNumber}</Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Status:</Typography>
-              <Typography>{status ? 'Active' : 'Inactive'}</Typography>
-            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -193,7 +187,7 @@ export default function UserTableRow({
       <StaffEditForm
         open={editOpen}
         onClose={handleEditClose}
-        staff={{ userId, username: userName, email, roleName, counterNumber, status }}
+        staff={{ userId, username: userName, email, roleName, counterNumber }}
         onSubmit={onSubmit}
       />
 
@@ -201,7 +195,7 @@ export default function UserTableRow({
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={onDelete}
-        staff={{ userId, username: userName, email, roleName, counterNumber, status }}
+        staff={{ userId, username: userName, email, roleName, counterNumber }}
       />
     </>
   );
@@ -213,7 +207,6 @@ UserTableRow.propTypes = {
   email: PropTypes.string.isRequired,
   roleName: PropTypes.string.isRequired,
   counterNumber: PropTypes.number.isRequired,
-  status: PropTypes.bool.isRequired,
   selected: PropTypes.bool.isRequired,
   handleClick: PropTypes.func.isRequired,
 };
