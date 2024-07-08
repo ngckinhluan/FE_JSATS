@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
 import TableSortLabel from '@mui/material/TableSortLabel';
-
-import { visuallyHidden } from './utils';
+import { visuallyHidden } from '@mui/utils';
 
 // ----------------------------------------------------------------------
 
@@ -63,11 +61,19 @@ export default function UserTableHead({
 }
 
 UserTableHead.propTypes = {
-  order: PropTypes.oneOf(['asc', 'desc']),
-  orderBy: PropTypes.string,
-  rowCount: PropTypes.number,
-  headLabel: PropTypes.array,
-  numSelected: PropTypes.number,
-  onRequestSort: PropTypes.func,
-  onSelectAllClick: PropTypes.func,
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  orderBy: PropTypes.string.isRequired,
+  rowCount: PropTypes.number.isRequired,
+  headLabel: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      align: PropTypes.string,
+      width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      minWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    })
+  ).isRequired,
+  numSelected: PropTypes.number.isRequired,
+  onRequestSort: PropTypes.func.isRequired,
+  onSelectAllClick: PropTypes.func.isRequired,
 };

@@ -1,32 +1,22 @@
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import Typography from '@mui/material/Typography';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-
+import { toast } from 'react-toastify';
+import { Card, Stack, Table, Button, Container, TableBody, Typography, TableContainer, TablePagination } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
 import TableNoData from '../table-no-data';
 import UserTableRow from '../customer-table-row';
-import TableEmptyRows from '../table-empty-rows';
 import UserTableHead from '../customer-table-head';
 import CustomerForm from '../create-customer-table';
 import UserTableToolbar from '../customer-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { applyFilter, getComparator } from '../utils'; // Import các hàm từ utils.js
 
 export default function CustomerPage() {
   const [customer, setCustomer] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('fullName');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
@@ -37,16 +27,17 @@ export default function CustomerPage() {
 
   useEffect(() => {
     getCustomer();
-  }, [page, rowsPerPage, filterName]);
+  }, [pageNumber, pageSize, filterName]);
 
   const getCustomer = async () => {
     try {
-      const response = await axios.get(`http://localhost:5188/api/Customer/GetCustomers?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-      const { data } = response.data;
-
+      const response = await axios.get(`http://localhost:5188/api/Customer/GetCustomers`, {
+        params: { pageNumber, pageSize, filterName }
+      });
+      const { data, totalPage, totalRecord } = response.data;
       setCustomer(data);
-      setTotalPage(response.data.totalPage);
-      setTotalRecord(response.data.totalRecord);
+      setTotalPage(totalPage);
+      setTotalRecord(totalRecord);
     } catch (error) {
       console.error('Error fetching customers:', error);
     }
@@ -60,19 +51,19 @@ export default function CustomerPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = customer.map((n) => n.fullName);
+      const newSelecteds = customer.map((n) => n.customerId);
       setSelected(newSelecteds);
     } else {
       setSelected([]);
     }
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -89,18 +80,55 @@ export default function CustomerPage() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    setPageNumber(newPage + 1); // API pagination starts from 1
+    setPageNumber(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newPageSize = parseInt(event.target.value, 10);
+    setRowsPerPage(newPageSize);
+    setPageSize(newPageSize);
+    setPage(0);
     setPageNumber(1);
-    setPageSize(parseInt(event.target.value, 10));
   };
 
-  const handleFilterByName = (event) => {
+  const handleFilterByName = (name) => {
+    setFilterName(name);
     setPage(0);
-    setFilterName(event.target.value);
+    setPageNumber(1);
+  };
+
+  const handleDeleteSelected = async () => {
+    try {
+      await Promise.all(
+        selected.map(customerId =>
+          axios.delete(`http://localhost:5188/api/Customer/DeleteCustomer/${customerId}`)
+        )
+      );
+      toast.success('Delete successful!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+        style: { backgroundColor: 'green' }
+      });
+      setSelected([]);
+      getCustomer();
+    } catch (error) {
+      console.error('Error deleting customers:', error);
+      toast.error('Error deleting customers!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+        style: { backgroundColor: 'red' }
+      });
+    }
   };
 
   const dataFiltered = applyFilter({
@@ -116,21 +144,40 @@ export default function CustomerPage() {
   };
 
   const handleNewCustomerClick = (newCustomerData) => {
-    // Example post request, adjust as per your API endpoint
     axios.post("http://localhost:5188/api/Customer/CreateCustomer", newCustomerData)
       .then(() => {
         setShowCustomerForm(false);
-        // Refresh data after successful creation
         getCustomer();
+        toast.success('Create successful!', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+          style: { backgroundColor: 'green' }
+        });
       })
-      .catch(error => console.error('Error creating customer:', error));
+      .catch(error => {
+        console.error('Error creating customer:', error);
+        toast.error('Error creating customer!', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+          style: { backgroundColor: 'red' }
+        });
+      });
   };
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Customers</Typography>
-
         <Button
           onClick={() => setShowCustomerForm(true)}
           variant="contained"
@@ -144,7 +191,12 @@ export default function CustomerPage() {
       <CustomerForm open={showCustomerForm} onClose={handleCloseCustomerForm} onSubmit={handleNewCustomerClick} />
 
       <Card>
-        <UserTableToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+        <UserTableToolbar 
+          numSelected={selected.length} 
+          filterName={filterName} 
+          onFilterName={handleFilterByName} 
+          onDeleteSelected={handleDeleteSelected} 
+        />
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -161,28 +213,26 @@ export default function CustomerPage() {
                   { id: 'address', label: 'Address' },
                   { id: 'phone', label: 'Phone Number' },
                   { id: 'point', label: 'Point' },
-                  { id: '', label: '' }, // Adjust for your action column
+                  { id: '', label: '' },
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.customerId}
-                      CusID={row.customerId}
-                      name={row.fullName}
-                      phoneNumber={row.phone}
-                      address={row.address}
-                      point={row.point}
-                      gender={row.gender}
-                      selected={selected.indexOf(row.fullName) !== -1}
-                      handleClick={(event) => handleClick(event, row.fullName)}
-                    />
-                  ))}
-
-                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, customer.length)} />
-
+                {dataFiltered.map((row, index) => (
+                  <UserTableRow
+                    key={row.customerId || index}
+                    customerId={row.customerId}
+                    userName={row.userName}
+                    email={row.email}
+                    fullName={row.fullName}
+                    phone={row.phone}
+                    address={row.address}
+                    point={row.point}
+                    gender={row.gender}
+                    selected={selected.indexOf(row.customerId) !== -1}
+                    handleClick={(event) => handleClick(event, row.customerId)}
+                    refreshCustomerList={getCustomer}
+                  />
+                ))}
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
@@ -190,13 +240,13 @@ export default function CustomerPage() {
         </Scrollbar>
 
         <TablePagination
-          page={page}
           component="div"
           count={totalRecord}
-          rowsPerPage={rowsPerPage}
+          page={page}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 100]}
         />
       </Card>
     </Container>

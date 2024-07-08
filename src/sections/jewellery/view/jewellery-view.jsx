@@ -43,12 +43,8 @@ export default function JewelleryView() {
 
   const getJew = async () => {
     try {
-      const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
-        params: {
-          pageNumber: page + 1,
-          pageSize: rowsPerPage,
-        },
-      });
+      const url = `http://localhost:5188/api/Jewelry/GetJewelries?pageNumber=${page + 1}&pageSize=${rowsPerPage}`;
+      const response = await axios.get(url);
       setJewList(response.data.data);
       setTotalRecord(response.data.totalRecord);
     } catch (error) {

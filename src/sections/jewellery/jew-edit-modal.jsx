@@ -25,8 +25,8 @@ export default function EditModal({
     gemType,
     gemweight,
     totalPrice,
-    type, // Nếu bạn sử dụng prop này
-    jewelleryType, // Nếu bạn sử dụng prop này
+    type, 
+    jewelleryType, 
 }) {
     const [goldtype, setGoldtype] = useState([]);
     const [gemtype, setGemtype] = useState([]);
@@ -258,10 +258,10 @@ export default function EditModal({
 EditModal.propTypes = {
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    name: PropTypes.string, // Thay đổi thành string nếu name là string
-    goldweight: PropTypes.number, // Thay đổi thành number nếu goldweight là number
-    laborCost: PropTypes.number, // Thay đổi thành number nếu laborCost là number
-    barcode: PropTypes.string, // Thay đổi thành string nếu barcode là string
+    name: PropTypes.string, 
+    goldweight: PropTypes.number, 
+    laborCost: PropTypes.number, 
+    barcode: PropTypes.string, 
     onUpdate: PropTypes.func.isRequired,
     goldprice: PropTypes.number,
     gemPrice: PropTypes.number,
@@ -270,7 +270,7 @@ EditModal.propTypes = {
     gemType: PropTypes.string,
     gemweight: PropTypes.number,
     totalPrice: PropTypes.number,
-    type: PropTypes.string, // Nếu bạn sử dụng prop này
+    type: PropTypes.string, 
     jewelleryType: PropTypes.arrayOf(
         PropTypes.shape({
             label: PropTypes.string.isRequired,

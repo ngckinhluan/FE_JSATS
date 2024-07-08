@@ -1,3 +1,4 @@
+// utils.js
 export const visuallyHidden = {
   border: 0,
   margin: -1,
@@ -29,6 +30,7 @@ function descendingComparator(a, b, orderBy) {
   }
   return 0;
 }
+
 export function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -48,7 +50,7 @@ export function applyFilter({ inputData, comparator, filterName }) {
 
   if (filterName) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (user) => user.fullName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
