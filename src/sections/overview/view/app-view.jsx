@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-
+import React, { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
@@ -19,10 +19,18 @@ import AppConversionRates from '../app-conversion-rates';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [subject, setSubject] = useState('');
+
+  useEffect(() => {
+    const sub = localStorage.getItem('SUB');
+    if (sub) {
+      setSubject(sub);
+    }
+  }, []);
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Hi, Welcome back 👋
+        Hi, Welcome back 👋 {subject}
       </Typography>
 
       <Grid container spacing={3}>

@@ -39,26 +39,30 @@ export default function LoginView() {
   const [showPassword, setShowPassword] = useState(false);
 
 // comment cho de dang nhap
-  // const handleClick = async() =>{
-  //   try {
-  //     const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
-  //     localStorage.setItem("TOKEN", response.data.token);
-  //     const token = jwtDecode(response.data.token);
-  //     // localStorage.setItem("ROLE",role)
-  //     if (response.status === 200) {
-  //       router.push('/dashboard');
-  //       toast.success('Bạn đã đăng nhập. Chào mừng đã vào cổng');
-  //     } else {
-  //       toast.error("Error information login");
-  //     }
-  //   } catch (e) {
-  //     toast.error("Error information login response");
-  //   }
-  // }
-
-  const handleClick = () => {
-    router.push('/dashboard');
-  };
+const handleClick = async () => {
+  try {
+    const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
+    if (response.status === 200) {
+      const {token} = response.data;
+      localStorage.setItem("TOKEN", token);
+      const decodedToken = jwtDecode(token);
+      const roleId = decodedToken.role; 
+      // localStorage.setItem("ROLE", roleId);
+      localStorage.setItem("SUB", decodedToken.sub); 
+      localStorage.setItem("NAMEID", decodedToken.nameid);
+      localStorage.setItem("EMAIL", decodedToken.email);
+      router.push('/dashboard');
+      toast.success('You have successfully logged in. Welcome!');
+    } else {
+      toast.error("Login information error");
+    }
+  } catch (e) {
+    toast.error("Error with login response");
+  }
+}
+  // const handleClick = () => {
+  //   router.push('/dashboard');
+  // };
 
   const renderForm = (
     
