@@ -223,7 +223,7 @@ export default function StaffView() {
                       email={row.email}
                       roleName={row.roleName}
                       counterNumber={row.counterNumber}
-                     
+                      getStaff={getStaff} // Pass getStaff to UserTableRow
                       selected={selected.indexOf(row.username) !== -1}
                       handleClick={(event) => handleClick(event, row.username)}
                     />

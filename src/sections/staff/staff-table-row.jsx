@@ -28,6 +28,7 @@ export default function UserTableRow({
   counterNumber,
   selected,
   handleClick,
+  getStaff, // Add getStaff prop
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -69,11 +70,6 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
-  const getStaff = async () => {
-    const res = await axios.get('http://localhost:5188/api/User/GetUsers');
-    setStaff(res.data);
-  };
-
   const onSubmit = async (updatedData) => {
     try {
       const res = await axios.put(
@@ -87,8 +83,8 @@ export default function UserTableRow({
       );
 
       if (res.status === 200) {
-        toast.success('Staff updated successfully');
-        window.location.reload(); // Refresh the page after successful edit
+        
+        getStaff(); // Refresh data after successful edit
       } else {
         toast.error('Failed to update staff');
       }
@@ -105,9 +101,8 @@ export default function UserTableRow({
         `http://localhost:5188/api/User/DeleteUser/${userId}`
       );
       if (res.status === 200) {
-        
-        window.location.reload(); // Refresh the page after successful delete
-        toast.success('Staff deleted successfully');
+       
+        getStaff(); // Refresh data after successful delete
       } else {
         toast.error('Failed to delete staff');
       }
@@ -215,5 +210,6 @@ UserTableRow.propTypes = {
   counterNumber: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   handleClick: PropTypes.func.isRequired,
+  getStaff: PropTypes.func.isRequired, // Add getStaff to prop types
 };
 
