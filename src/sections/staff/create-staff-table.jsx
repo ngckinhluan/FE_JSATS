@@ -49,7 +49,7 @@ function StaffForm({ open, onClose, onSubmit }) {
         e.preventDefault();
         if (validate()) {
             onSubmit(formState);
-            toast.success('New staff added successfully');
+            //toast.success('New staff added successfully');
             setFormState(initialFormState);
             onClose();
         } else {

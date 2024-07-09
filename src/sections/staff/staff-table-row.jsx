@@ -69,6 +69,11 @@ export default function UserTableRow({
     handleCloseMenu();
   };
 
+  const getStaff = async () => {
+    const res = await axios.get('http://localhost:5188/api/User/GetUsers');
+    setStaff(res.data);
+  };
+
   const onSubmit = async (updatedData) => {
     try {
       const res = await axios.put(
@@ -97,7 +102,7 @@ export default function UserTableRow({
   const onDelete = async () => {
     try {
       const res = await axios.delete(
-        `http://localhost:5188/api/User/DeleteUser/${userId}`//http://localhost:5188/api/User/UpdateUser/OT91ftV
+        `http://localhost:5188/api/User/DeleteUser/${userId}`
       );
       if (res.status === 200) {
         

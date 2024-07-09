@@ -51,6 +51,11 @@ export default function StaffView() {
     fetchStaff();
   }, []);
 
+  const getStaff = async () => {
+    const res = await axios.get('http://localhost:5188/api/User/GetUsers');
+    setStaff(res.data);
+  };
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -112,6 +117,7 @@ export default function StaffView() {
         toast.success('Staff added successfully');
         const newStaffMember = response.data; // Assuming response.data contains the new staff member object
         setStaff((prevStaff) => [...prevStaff, newStaffMember]); // Update state with the new staff member
+        getStaff();
         setShowStaffForm(false); // Close the form after successful addition
       } else {
         toast.error('Failed to add staff');
@@ -119,6 +125,30 @@ export default function StaffView() {
     } catch (error) {
       console.error('Error adding staff:', error);
       toast.error('Error adding staff');
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    try {
+      await Promise.all(
+        selected.map(async (username) => {
+          const staffMember = staff.find((member) => member.username === username);
+          if (staffMember) {
+            const response = await axios.delete(
+              `http://localhost:5188/api/User/DeleteUser/${staffMember.userId}`
+            );
+            if (response.status !== 200) {
+              throw new Error(`Failed to delete staff with username: ${username}`);
+            }
+          }
+        })
+      );
+      toast.success('Selected staff deleted successfully');
+      getStaff();
+      setSelected([]);
+    } catch (error) {
+      console.error('Error deleting selected staff:', error);
+      toast.error('Error deleting selected staff');
     }
   };
 
@@ -160,6 +190,7 @@ export default function StaffView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
+          onDeleteSelected={handleDeleteSelected}
         />
 
         <Scrollbar>

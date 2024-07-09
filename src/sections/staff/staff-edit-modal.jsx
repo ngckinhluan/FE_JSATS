@@ -61,7 +61,7 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
         event.preventDefault();
         if (validate()) {
             onSubmit(formState);
-            toast.success('Staff updated successfully');
+            //toast.success('Staff updated successfully');
             onClose();
         } else {
             toast.error('Please fix the validation errors');
