@@ -100,6 +100,11 @@ export default function StaffView() {
     setFilterName(event.target.value);
   };
 
+  const getStaff = async () => {
+    const res = await axios.get('http://localhost:5188/api/User/GetUsers');
+    setStaff(res.data);
+  };
+
   const handleNewStaffClick = async (newStaffData) => {
     try {
       const response = await axios.post('http://localhost:5188/api/User/AddUser', newStaffData, {
@@ -111,8 +116,10 @@ export default function StaffView() {
       if (response.status === 200) {
         toast.success('Staff added successfully');
         const newStaffMember = response.data; // Assuming response.data contains the new staff member object
-        setStaff((prevStaff) => [...prevStaff, newStaffMember]); // Update state with the new staff member
+        setStaff((prevStaff) => [...prevStaff, newStaffMember]);
+         // Update state with the new staff member
         setShowStaffForm(false); // Close the form after successful addition
+        getStaff();
       } else {
         toast.error('Failed to add staff');
       }
