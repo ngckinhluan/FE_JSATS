@@ -18,8 +18,16 @@ import AppConversionRates from '../app-conversion-rates';
 
 // ----------------------------------------------------------------------
 
+// This is my api http://localhost:5188/api/Dashboard/NewCustomers returns the number of
+// customer, how can I pour it into the new users?
 export default function AppView() {
   const [subject, setSubject] = useState('');
+  const [newUsers, setNewUsers] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [repeatCustomer, setRepeatCustomer] = useState(0);
+  const [totalCustomer, setTotalCustomer] = useState(0);
+  const [jewelrySales, setJewelrySales] = useState([]);
+  const [jewelrySalesTypes, setJewelrySalesTypes] = useState([]);
 
   useEffect(() => {
     const sub = localStorage.getItem('SUB');
@@ -27,6 +35,81 @@ export default function AppView() {
       setSubject(sub);
     }
   }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:5188/api/Dashboard/NewCustomers')
+      .then((response) => response.json())
+      .then((data) => {
+        setNewUsers(data.total || data);
+      })
+      .catch((error) => {
+        console.error('Error fetching new users:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:5188/api/Dashboard/TotalSoldJewelry')
+      .then((response) => response.json())
+      .then((data) => {
+        setRepeatCustomer(data.total || data);
+      })
+      .catch((error) => {
+        console.error('Error fetching new users:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:5188/api/Dashboard/TotalCustomers')
+      .then((response) => response.json())
+      .then((data) => {
+        setTotalCustomer(data.total || data);
+      })
+      .catch((error) => {
+        console.error('Error fetching new users:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:5188/api/Dashboard/TotalRevenueAllTime')
+      .then((response) => response.json())
+      .then((data) => {
+        setTotalRevenue(data.totalRevenue || data);
+      })
+      .catch((error) => {
+        console.error('Error fetching total revenue:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:5188/api/Dashboard/BestSellingJewelryTypes')
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedData = data.map((item) => ({
+          label: item.jewelryTypeName,
+          value: item.purchaseTime,
+        }));
+        setJewelrySales(formattedData);
+      })
+      .catch((error) => {
+        console.error('Error fetching jewelry sales:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:5188/api/Dashboard/BestSellingJewelry')
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedData = data.map((item) => ({
+          label: item.jewelryName,
+          value: item.purchaseTime,
+        }));
+        setJewelrySalesTypes(formattedData);
+      })
+      .catch((error) => {
+        console.error('Error fetching jewelry sales:', error);
+      });
+  }, []);
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -36,8 +119,8 @@ export default function AppView() {
       <Grid container spacing={3}>
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Weekly Sales"
-            total={714000}
+            title="Total Revenues"
+            total={totalRevenue}
             color="success"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
           />
@@ -45,8 +128,8 @@ export default function AppView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="New Users"
-            total={1352831}
+            title="All Customers"
+            total={totalCustomer}
             color="info"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
           />
@@ -54,26 +137,35 @@ export default function AppView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Item Orders"
-            total={1723315}
+            title="New Customers"
+            total={newUsers}
+            color="info"
+            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
+          />
+        </Grid>
+
+        <Grid xs={12} sm={6} md={3}>
+          <AppWidgetSummary
+            title="Jewelries Sold"
+            total={repeatCustomer}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
+        {/* <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Bug Reports"
             total={234}
             color="error"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits
-            title="Website Visits"
-            subheader="(+43%) than last year"
+            title="Customers"
+            // subheader="(+43%) than last year"
             chart={{
               labels: [
                 '01/01/2003',
@@ -91,7 +183,7 @@ export default function AppView() {
               series: [
                 {
                   name: 'Team A',
-                  type: 'column',
+                  type: 'line',
                   fill: 'solid',
                   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
                 },
@@ -114,52 +206,37 @@ export default function AppView() {
 
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentVisits
-            title="Current Visits"
+            title="Jewelry Sales Type"
             chart={{
-              series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ],
+              series: jewelrySales,
             }}
           />
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
           <AppConversionRates
-            title="Conversion Rates"
-            subheader="(+43%) than last year"
+            title="Best Selling Items"
             chart={{
-              series: [
-                { label: 'Italy', value: 400 },
-                { label: 'Japan', value: 430 },
-                { label: 'China', value: 448 },
-                { label: 'Canada', value: 470 },
-                { label: 'France', value: 540 },
-                { label: 'Germany', value: 580 },
-                { label: 'South Korea', value: 690 },
-                { label: 'Netherlands', value: 1100 },
-                { label: 'United States', value: 1200 },
-                { label: 'United Kingdom', value: 1380 },
-              ],
+              series: jewelrySalesTypes,
             }}
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+
+
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppCurrentSubject
             title="Current Subject"
             chart={{
               categories: ['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math'],
               series: [
-                { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
+                { name: 'Series 1', data: [100, 50, 30, 40, 100, 20] },
                 { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
                 { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} md={6} lg={8}>
           <AppNewsUpdate
@@ -192,7 +269,7 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppTrafficBySite
             title="Traffic by Site"
             list={[
@@ -218,9 +295,9 @@ export default function AppView() {
               },
             ]}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={8}>
+        {/* <Grid xs={12} md={6} lg={8}>
           <AppTasks
             title="Tasks"
             list={[
@@ -231,8 +308,10 @@ export default function AppView() {
               { id: '5', name: 'Sprint Showcase' },
             ]}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );
 }
+
+

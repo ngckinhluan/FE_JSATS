@@ -29,7 +29,7 @@ export default function AppConversionRates({ title, subheader, chart, ...other }
     plotOptions: {
       bar: {
         horizontal: true,
-        barHeight: '28%',
+        barHeight: '30%',
         borderRadius: 2,
       },
     },
@@ -50,7 +50,7 @@ export default function AppConversionRates({ title, subheader, chart, ...other }
           series={[{ data: chartSeries }]}
           options={chartOptions}
           width="100%"
-          height={364}
+          height={700}
         />
       </Box>
     </Card>
