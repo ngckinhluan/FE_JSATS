@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 
 function StaffForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        roleId: '', // Start with blank role
+        roleId: '3', // Start with blank role
         username: '',
         fullName: '',
         gender: '', 
@@ -126,7 +126,6 @@ function StaffForm({ open, onClose, onSubmit }) {
                     >
                         <MenuItem value="">Select Role</MenuItem>
                         <MenuItem value="3">Staff</MenuItem>
-                        <MenuItem value="1">Admin</MenuItem>
                         <MenuItem value="2">Manager</MenuItem>
                     </Select>
                     {errors.roleId && <p style={{ color: 'red', margin: '5px 0' }}>{errors.roleId}</p>}

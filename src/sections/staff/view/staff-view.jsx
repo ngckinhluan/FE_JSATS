@@ -40,7 +40,8 @@ export default function StaffView() {
     const fetchStaff = async () => {
       try {
         const response = await axios.get('http://localhost:5188/api/User/GetUsers');
-        setStaff(response.data);
+        const filteredStaff = response.data.filter((user) => user.roleName === 'Staff');
+        setStaff(filteredStaff);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching staff data:', error);
@@ -53,7 +54,8 @@ export default function StaffView() {
 
   const getStaff = async () => {
     const res = await axios.get('http://localhost:5188/api/User/GetUsers');
-    setStaff(res.data);
+    const filteredStaff = res.data.filter((user) => user.roleName === 'Staff');
+    setStaff(filteredStaff);
   };
 
   const handleSort = (event, id) => {
@@ -253,3 +255,4 @@ export default function StaffView() {
     </Container>
   );
 }
+

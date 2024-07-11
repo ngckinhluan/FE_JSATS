@@ -210,6 +210,6 @@ UserTableRow.propTypes = {
   counterNumber: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   handleClick: PropTypes.func.isRequired,
-  getStaff: PropTypes.func.isRequired, // Add getStaff to prop types
+  getStaff: PropTypes.func.isRequired, 
 };
 

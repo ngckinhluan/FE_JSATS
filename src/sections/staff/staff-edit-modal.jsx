@@ -135,7 +135,7 @@ function StaffEditForm({ open, onClose, onSubmit, staff }) {
                         onChange={handleChange}
                         error={!!errors.roleId}
                     >
-                        <MenuItem value="1">Admin</MenuItem>
+                        
                         <MenuItem value="2">Manager</MenuItem>
                         <MenuItem value="3">Staff</MenuItem>
                     </Select>
