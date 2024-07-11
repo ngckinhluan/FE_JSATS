@@ -1,7 +1,12 @@
 import axios from 'axios';
+import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -9,8 +14,13 @@ import Popover from '@mui/material/Popover';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
+import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -22,8 +32,12 @@ import StaffDeleteForm from './staff-del-modal';
 
 export default function UserTableRow({
   userId,
+  userId,
   userName,
   email,
+  roleName,
+  counterNumber,
+  selected,
   roleName,
   counterNumber,
   selected,
@@ -124,6 +138,9 @@ export default function UserTableRow({
         <TableCell>{roleName}</TableCell>
         <TableCell>{counterNumber}</TableCell>
         <TableCell align="right">
+        <TableCell>{roleName}</TableCell>
+        <TableCell>{counterNumber}</TableCell>
+        <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
           </Button>
@@ -140,8 +157,11 @@ export default function UserTableRow({
             <Grid item xs={12}>
               <Typography variant="h6">User ID:</Typography>
               <Typography>{userId}</Typography>
+              <Typography variant="h6">User ID:</Typography>
+              <Typography>{userId}</Typography>
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="h6">Username:</Typography>
               <Typography variant="h6">Username:</Typography>
               <Typography>{userName}</Typography>
             </Grid>
@@ -152,14 +172,19 @@ export default function UserTableRow({
             <Grid item xs={12}>
               <Typography variant="h6">Role Name:</Typography>
               <Typography>{roleName}</Typography>
+              <Typography variant="h6">Role Name:</Typography>
+              <Typography>{roleName}</Typography>
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="h6">Counter Number:</Typography>
+              <Typography>{counterNumber}</Typography>
               <Typography variant="h6">Counter Number:</Typography>
               <Typography>{counterNumber}</Typography>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
+          <Button onClick={handleDialogClose}>Close</Button>
           <Button onClick={handleDialogClose}>Close</Button>
         </DialogActions>
       </Dialog>
@@ -189,6 +214,7 @@ export default function UserTableRow({
         open={editOpen}
         onClose={handleEditClose}
         staff={{ userId, username: userName, email, roleName, counterNumber }}
+        staff={{ userId, username: userName, email, roleName, counterNumber }}
         onSubmit={onSubmit}
       />
 
@@ -196,6 +222,7 @@ export default function UserTableRow({
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={onDelete}
+        staff={{ userId, username: userName, email, roleName, counterNumber }}
         staff={{ userId, username: userName, email, roleName, counterNumber }}
       />
     </>
@@ -212,4 +239,5 @@ UserTableRow.propTypes = {
   handleClick: PropTypes.func.isRequired,
   getStaff: PropTypes.func.isRequired, 
 };
+
 

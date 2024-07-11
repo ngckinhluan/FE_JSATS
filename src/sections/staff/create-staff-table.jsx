@@ -20,6 +20,7 @@ function StaffForm({ open, onClose, onSubmit }) {
         gender: '', 
         email: '',
         password: ''
+        password: ''
     };
 
     const [formState, setFormState] = React.useState(initialFormState);
@@ -66,8 +67,11 @@ function StaffForm({ open, onClose, onSubmit }) {
                     margin="dense"
                     name="username"
                     label="User Name"
+                    name="username"
+                    label="User Name"
                     type="text"
                     fullWidth
+                    value={formState.username}
                     value={formState.username}
                     onChange={handleChange}
                     error={!!errors.username}
@@ -79,8 +83,11 @@ function StaffForm({ open, onClose, onSubmit }) {
                     margin="dense"
                     name="fullName"
                     label="Full Name"
+                    name="fullName"
+                    label="Full Name"
                     type="text"
                     fullWidth
+                    value={formState.fullName}
                     value={formState.fullName}
                     onChange={handleChange}
                     error={!!errors.fullName}
@@ -93,7 +100,9 @@ function StaffForm({ open, onClose, onSubmit }) {
                     name="email"
                     label="Email"
                     type="email"
+                    type="email"
                     fullWidth
+                    value={formState.email}
                     value={formState.email}
                     onChange={handleChange}
                     error={!!errors.email}
@@ -106,7 +115,9 @@ function StaffForm({ open, onClose, onSubmit }) {
                     name="password"
                     label="Password"
                     type="password"
+                    type="password"
                     fullWidth
+                    value={formState.password}
                     value={formState.password}
                     onChange={handleChange}
                     error={!!errors.password}
@@ -116,9 +127,11 @@ function StaffForm({ open, onClose, onSubmit }) {
 
                 <FormControl fullWidth margin="dense">
                     <InputLabel id="role-label">Role</InputLabel>
+                    <InputLabel id="role-label">Role</InputLabel>
                     <Select
                         labelId="role-label"
                         name="roleId"
+                        label="Role"
                         label="Role"
                         value={formState.roleId}
                         onChange={handleChange}
@@ -131,12 +144,16 @@ function StaffForm({ open, onClose, onSubmit }) {
                     {errors.roleId && <p style={{ color: 'red', margin: '5px 0' }}>{errors.roleId}</p>}
                 </FormControl>
 
-                <TextField
+                {/* Assuming gender is optional */}
+                {/* <TextField
                     margin="dense"
+                    name="gender"
+                    label="Gender"
                     name="gender"
                     label="Gender"
                     type="text"
                     fullWidth
+                    value={formState.gender}
                     value={formState.gender}
                     onChange={handleChange}
                     error={!!errors.gender}
