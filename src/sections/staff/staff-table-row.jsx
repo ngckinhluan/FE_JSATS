@@ -123,9 +123,6 @@ export default function UserTableRow({
         <TableCell>{email}</TableCell>
         <TableCell>{roleName}</TableCell>
         <TableCell>{counterNumber}</TableCell>
-        <TableCell align="right"></TableCell>
-        <TableCell>{roleName}</TableCell>
-        <TableCell>{counterNumber}</TableCell>
         <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
