@@ -10,29 +10,51 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { InputLabel, FormControl } from '@mui/material';
+import { toast } from 'react-toastify';
 
 function StaffForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        staffId: '',
-        userName: '',
+        roleId: '3', // Start with blank role
+        username: '',
+        fullName: '',
+        gender: '', 
         email: '',
-        password: '',
-        roleId: '',
-        counterId: '',
-        status: '',
+        password: ''
     };
 
     const [formState, setFormState] = React.useState(initialFormState);
+    const [errors, setErrors] = React.useState({});
 
     const handleChange = (e) => {
-        setFormState({ ...formState, [e.target.name]: e.target.value })
+        setFormState({ ...formState, [e.target.name]: e.target.value });
+    };
+
+    const validate = () => {
+        const newErrors = {};
+        if (!formState.username) newErrors.username = 'Username is required';
+        if (!formState.fullName) newErrors.fullName = 'Full Name is required';
+        if (!formState.email) {
+            newErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(formState.email)) {
+            newErrors.email = 'Email address is invalid';
+        }
+        if (!formState.password) newErrors.password = 'Password is required';
+        if (!formState.gender) newErrors.gender = 'Gender is required';
+        if (!formState.roleId) newErrors.roleId = 'Role is required';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Ngăn chặn hành động submit mặc định của form
-        onSubmit(formState); // Gọi addPromotion
-        setFormState(initialFormState); // Clear các trường của form sau khi submit
-        onClose();
+        e.preventDefault();
+        if (validate()) {
+            onSubmit(formState);
+            //toast.success('New staff added successfully');
+            setFormState(initialFormState);
+            onClose();
+        } else {
+            toast.error('Please fix the validation errors');
+        }
     };
 
     return (
@@ -42,77 +64,86 @@ function StaffForm({ open, onClose, onSubmit }) {
                 <TextField
                     autoFocus
                     margin="dense"
-                    name="staffId"
-                    label="Staff ID"
+                    name="username"
+                    label="User Name"
                     type="text"
                     fullWidth
+                    value={formState.username}
                     onChange={handleChange}
+                    error={!!errors.username}
+                    helperText={errors.username}
+                    InputProps={{ style: { marginBottom: 10 } }}
                 />
 
                 <TextField
                     margin="dense"
-                    name="userName"
-                    label="User Name"
+                    name="fullName"
+                    label="Full Name"
                     type="text"
                     fullWidth
+                    value={formState.fullName}
                     onChange={handleChange}
+                    error={!!errors.fullName}
+                    helperText={errors.fullName}
+                    InputProps={{ style: { marginBottom: 10 } }}
                 />
 
                 <TextField
                     margin="dense"
                     name="email"
                     label="Email"
-                    type="text"
+                    type="email"
                     fullWidth
+                    value={formState.email}
                     onChange={handleChange}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    InputProps={{ style: { marginBottom: 10 } }}
                 />
 
                 <TextField
                     margin="dense"
                     name="password"
                     label="Password"
-                    type="text"
+                    type="password"
                     fullWidth
+                    value={formState.password}
                     onChange={handleChange}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                    InputProps={{ style: { marginBottom: 10 } }}
                 />
 
                 <FormControl fullWidth margin="dense">
-                    <InputLabel id="role-label">Role ID</InputLabel>
+                    <InputLabel id="role-label">Role</InputLabel>
                     <Select
                         labelId="role-label"
                         name="roleId"
-                        label="Role ID"
+                        label="Role"
                         value={formState.roleId}
                         onChange={handleChange}
+                        error={!!errors.roleId}
                     >
-                        <MenuItem value="Staff">Staff</MenuItem>
-                        <MenuItem value="Admin">Admin</MenuItem>
-                        <MenuItem value="Manager">Manager</MenuItem>
+                        <MenuItem value="">Select Role</MenuItem>
+                        <MenuItem value="3">Staff</MenuItem>
+                        <MenuItem value="2">Manager</MenuItem>
                     </Select>
+                    {errors.roleId && <p style={{ color: 'red', margin: '5px 0' }}>{errors.roleId}</p>}
                 </FormControl>
 
                 <TextField
                     margin="dense"
-                    name="counterId"
-                    label="Counter ID"
+                    name="gender"
+                    label="Gender"
                     type="text"
                     fullWidth
+                    value={formState.gender}
                     onChange={handleChange}
+                    error={!!errors.gender}
+                    helperText={errors.gender}
+                    InputProps={{ style: { marginBottom: 10 } }}
                 />
 
-                <FormControl fullWidth margin="dense">
-                    <InputLabel id="status-label">Status</InputLabel>
-                    <Select
-                        labelId="status-label"
-                        name="status"
-                        label="Status"
-                        value={formState.status}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="active">Active</MenuItem>
-                        <MenuItem value="inactive">Inactive</MenuItem>
-                    </Select>
-                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
@@ -129,3 +160,4 @@ StaffForm.propTypes = {
 };
 
 export default StaffForm;
+

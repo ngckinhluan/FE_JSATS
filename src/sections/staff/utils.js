@@ -29,6 +29,7 @@ function descendingComparator(a, b, orderBy) {
   }
   return 0;
 }
+
 export function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -48,9 +49,11 @@ export function applyFilter({ inputData, comparator, filterName }) {
 
   if (filterName) {
     inputData = inputData.filter(
-      (staff) => staff.userName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (staff) => staff.username.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
   return inputData;
 }
+
+
