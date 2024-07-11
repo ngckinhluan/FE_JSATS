@@ -47,11 +47,17 @@ export function applyFilter({ inputData, comparator, filterName }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    console.log("inputdata", inputData)
-    inputData = inputData.filter(
-      (promotion) => promotion.type.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((promotion) => {
+      const filterLower = filterName.toLowerCase();
+      return (
+        promotion.type.toLowerCase().indexOf(filterLower) !== -1 ||
+        promotion.promotionId.toString().toLowerCase().indexOf(filterLower) !== -1 ||
+        promotion.description.toLowerCase().indexOf(filterLower) !== -1 ||
+        promotion.discountRate.toString().toLowerCase().indexOf(filterLower) !== -1 ||
+        promotion.startDate.toLowerCase().indexOf(filterLower) !== -1 ||
+        promotion.endDate.toLowerCase().indexOf(filterLower) !== -1
+      );
+    });
   }
-
   return inputData;
 }
