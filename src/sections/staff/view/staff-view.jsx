@@ -19,7 +19,7 @@ import TableNoData from '../table-no-data';
 import UserTableRow from '../staff-table-row';
 import UserTableHead from '../staff-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import StaffForm from '../create-staff-form';
+import StaffForm from '../create-staff-table';
 import UserTableToolbar from '../staff-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
