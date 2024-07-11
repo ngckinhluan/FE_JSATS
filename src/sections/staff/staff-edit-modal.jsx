@@ -10,7 +10,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { InputLabel, FormControl } from '@mui/material';
 import { toast } from 'react-toastify';
-import { toast } from 'react-toastify';
 
 function StaffEditForm({ open, onClose, onSubmit, staff }) {
     const [formState, setFormState] = React.useState({
