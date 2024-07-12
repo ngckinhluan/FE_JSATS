@@ -1,20 +1,19 @@
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useState, useEffect } from 'react';
-
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import Typography from '@mui/material/Typography';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-
+import {
+  Card,
+  Stack,
+  Table,
+  Button,
+  Container,
+  TableBody,
+  Typography,
+  TableContainer,
+  TablePagination,
+} from '@mui/material';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
 import NewModal from '../jew-new-modal';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../jew-table-row';
@@ -29,40 +28,76 @@ export default function JewelleryView() {
   const handleShow = () => setShow(true);
 
   const [jewList, setJewList] = useState([]);
+  const [fullJewList, setFullJewList] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
+  const [filterType, setFilterType] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalRecord, setTotalRecord] = useState(0);
+  const [jewTypes, setJewTypes] = useState([]);
 
   useEffect(() => {
     getJew();
-  }, []);
+    getJewTypes();
+  }, [page, rowsPerPage, filterName, filterType]);
 
   const getJew = async () => {
     try {
-      const url = `http://localhost:5188/api/Jewelry/GetJewelries?pageNumber=${page + 1}&pageSize=${rowsPerPage}`;
-      const response = await axios.get(url);
-      setJewList(response.data.data);
-      setTotalRecord(response.data.totalRecord);
+      const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
+        params: { pageNumber: page + 1, pageSize: rowsPerPage, filterName, filterType }
+      });
+      const { data, totalRecord } = response.data;
+      setJewList(data);
+      setTotalRecord(totalRecord);
     } catch (error) {
       console.error('Error fetching jewellery:', error);
     }
   };
 
+  const getAllJew = async () => {
+    try {
+      const totalResponse = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
+        params: { pageNumber: 1, pageSize: 1, filterName: '', filterType: '' }
+      });
+      const totalRecords = totalResponse.data.totalRecord;
+
+      const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
+        params: { pageNumber: 1, pageSize: totalRecords, filterName: '', filterType: '' }
+      });
+      setFullJewList(response.data.data);
+    } catch (error) {
+      console.error('Error fetching all jewellery:', error);
+    }
+  };
+
+  useEffect(() => {
+    getAllJew();
+  }, []);
+
+  const getJewTypes = async () => {
+    try {
+      const response = await axios.get('http://localhost:5188/api/JewelryType/GetJewelryTypes');
+      setJewTypes(response.data);
+    } catch (error) {
+      console.error('Error fetching jewelry types:', error);
+    }
+  };
+
   const createJew = async (newItem) => {
     try {
-      const response = await axios.post('http://localhost:5188/api/Jewelry/CreateJewelry', newItem);
-      setJewList([...jewList, newItem]);
-      handleClose();
-      toast.success('Create successful !', {
-        position: 'bottom-right',
-        theme: 'colored',
-      });
+        const response = await axios.post('http://localhost:5188/api/Jewelry/CreateJewelry', newItem);
+        toast.success('Create successful!', {
+            position: 'bottom-right',
+            theme: 'colored',
+        });
+        handleClose();
+        getJew(); // Gọi hàm getJew để làm mới lại danh sách
+        getAllJew(); // Làm mới danh sách đầy đủ
     } catch (error) {
-      console.error('There was an error creating the item:', error);
+        console.error('There was an error creating the item:', error);
     }
   };
 
@@ -70,7 +105,8 @@ export default function JewelleryView() {
     try {
       await axios.delete(`http://localhost:5188/api/Jewelry/DeleteJewelry/${id}`);
       setJewList(jewList.filter((item) => item.jewelryId !== id));
-      toast.success('Delete successful !', {
+      setFullJewList(fullJewList.filter((item) => item.jewelryId !== id));
+      toast.success('Delete successful!', {
         position: 'bottom-right',
         theme: 'colored',
       });
@@ -79,18 +115,33 @@ export default function JewelleryView() {
     }
   };
 
-  const updateJew = async (id, updatedData) => {
+  const updateJew = async (updatedData) => {
     try {
-      const response = await axios.put(`http://localhost:5188/api/Jewelry/UpdateJewelry/${id}`, updatedData);
+      await axios.put(`http://localhost:5188/api/Jewelry/UpdateJewelry/${updatedData.jewelryId}`, updatedData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       setJewList((prevData) =>
-        prevData.map((item) => (item.jewelryId === id ? updatedData : item))
+        prevData.map((item) =>
+          item.jewelryId === updatedData.jewelryId ? { ...item, ...updatedData } : item
+        )
       );
-      toast.success('Update successful !', {
+      setFullJewList((prevData) =>
+        prevData.map((item) =>
+          item.jewelryId === updatedData.jewelryId ? { ...item, ...updatedData } : item
+        )
+      );
+      toast.success('Update successful!', {
         position: 'bottom-right',
         theme: 'colored',
       });
     } catch (error) {
       console.error('Error updating jewellery:', error);
+      toast.error('Error updating jewellery!', {
+        position: 'bottom-right',
+        theme: 'colored',
+      });
     }
   };
 
@@ -138,15 +189,29 @@ export default function JewelleryView() {
 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
+    setPage(0);
   };
 
+  const handleFilterByType = (event) => {
+    console.log("Filter Type:", event.target.value);
+    setFilterType(event.target.value);
+    setPage(0);
+  };
+  console.log('filterType:', filterType);
+  console.log('jewList:', jewList); 
+
   const dataFiltered = applyFilter({
-    inputData: jewList,
+    inputData: fullJewList,
     comparator: getComparator(order, orderBy),
     filterName,
+    filterType,
   });
 
   const notFound = !dataFiltered.length && !!filterName;
+
+  const totalRecords = filterType ? dataFiltered.length : totalRecord;
+
+  const paginatedData = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Container>
@@ -157,75 +222,80 @@ export default function JewelleryView() {
         </Button>
         <NewModal show={show} handleClose={handleClose} createJew={createJew} />
       </Stack>
-
+  
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
+          filterType={filterType}
           onFilterName={handleFilterByName}
+          onFilterType={handleFilterByType}
+          jewTypes={jewTypes}
         />
-
+  
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={totalRecord}
+                rowCount={totalRecords}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
                   { id: 'type', label: 'Type' },
-                  { id: 'jewelryPrice', label: 'JewelryPrice' },
+                  { id: 'jewelryPrice', label: 'Jewelry Price' },
                   { id: 'laborCost', label: 'Labor Cost' },
                   { id: 'barcode', label: 'Barcode' },
                   { id: '' },
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.jewelryId}
-                      id={row.jewelryId}
-                      name={row.name}
-                      goldweight={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldQuantity : ''}
-                      goldprice={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldPrice : ''}
-                      goldType={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldType : ''}
-                      gemType={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gem : ''}
-                      gemweight={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemQuantity : ''}
-                      gemPrice={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemPrice : ''}
-                      totalPrice={row.totalPrice}
-                      type={row.type}
-                      barcode={row.barcode}
-                      jewelryPrice={row.totalPrice}
-                      gemCost={row.gemCost}
-                      laborCost={row.laborCost}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                      onDelete={() => deleteJewellery(row.jewelryId)}
-                      onUpdate={(updatedData) => updateJew(row.jewelryId, updatedData)}
-                    />
-                  ))}
+                {paginatedData.map((row) => (
+                  <UserTableRow
+                    key={row.jewelryId}
+                    id={row.jewelryId}
+                    name={row.name}
+                    imageUrl={row.imageUrl}
+                    goldWeight={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldQuantity : ''}
+                    goldPrice={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldPrice : ''}
+                    goldType={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldType : ''}
+                    goldTypeId={row.materials && row.materials.length > 0 && row.materials[0].gold ? row.materials[0].gold.goldTypeId : null}
+                    gemType={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gem : ''}
+                    gemTypeId={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemTypeId : null}
+                    gemWeight={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemQuantity : ''}
+                    gemPrice={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemPrice : ''}
+                    totalPrice={row.totalPrice}
+                    type={row.type}
+                    typeId={row.type ? row.type.typeId : null} 
+                    barcode={row.barcode}
+                    jewelryPrice={row.totalPrice}
+                    gemCost={row.gemCost}
+                    laborCost={row.laborCost}
+                    selected={selected.indexOf(row.name) !== -1}
+                    handleClick={(event) => handleClick(event, row.name)}
+                    onDelete={() => deleteJewellery(row.jewelryId)}
+                    onUpdate={updateJew}
+                  />                
+                ))}
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, totalRecord)}
+                  emptyRows={emptyRows(page, rowsPerPage, totalRecords)}
                 />
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
         </Scrollbar>
-
+  
         <TablePagination
-          page={page}
           component="div"
-          count={totalRecord}
-          rowsPerPage={rowsPerPage}
+          count={totalRecords}
+          page={page}
           onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[5]}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />

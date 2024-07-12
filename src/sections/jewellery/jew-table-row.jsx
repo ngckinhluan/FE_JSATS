@@ -11,24 +11,18 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-// import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 import InfoModal from './jew-modal';
 import DelModal from './jew-del-modal';
 import EditModal from './jew-edit-modal';
 
-
-
-
-// ----------------------------------------------------------------------
-
 export default function UserTableRow({
   id,
   selected,
   name,
-  goldweight,
-  goldprice,
+  goldWeight,
+  goldPrice,
   laborCost,
   handleClick,
   onDelete,
@@ -37,34 +31,29 @@ export default function UserTableRow({
   jewelryPrice,
   goldType,
   gemType,
-  gemweight,
+  gemWeight,
   gemPrice,
+  imageUrl,
   totalPrice,
-  type
+  type,
 }) {
   const [open, setOpen] = useState(null);
   const [showDel, setShowDel] = useState(false);
+  const [showEd, setShowEd] = useState(false);
+  const [show, setShow] = useState(false);
 
   const handleCloseDel = () => setShowDel(false);
   const handleShowDel = () => setShowDel(true);
 
-  const [showEd, setShowEd] = useState(false);
-
   const handleCloseEd = () => setShowEd(false);
   const handleShowEd = () => setShowEd(true);
-
-  const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
-
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
-
-
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -79,7 +68,6 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
@@ -93,11 +81,8 @@ export default function UserTableRow({
         <TableCell>{laborCost}$</TableCell>
 
         <TableCell>
-          {/* <Label color={(status === 'Out-stock' && 'error') || 'success'}>{status}</Label> */}
           {barcode}
         </TableCell>
-
-
 
         <TableCell align="right">
           <Button variant="outline-primary" onClick={handleShow}>More Info</Button>
@@ -118,33 +103,32 @@ export default function UserTableRow({
         }}
       >
         <MenuItem onClick={() => { handleCloseMenu(); handleShowEd(); }}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} onClick={handleShowEd} />
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
         <MenuItem onClick={() => { handleCloseMenu(); handleShowDel(); }} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} onClick={handleShowDel} />
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
 
-      <InfoModal show={show} handleClose={handleClose} name={name} goldprice={goldprice} goldweight={goldweight} laborCost={laborCost} goldType={goldType}  gemType={gemType} gemweight={gemweight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} />
+      <InfoModal show={show} handleClose={handleClose} name={name} type={type} goldPrice={goldPrice} goldWeight={goldWeight} laborCost={laborCost} goldType={goldType} gemType={gemType} gemWeight={gemWeight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} imageUrl={imageUrl} />
 
-      <DelModal show={showDel} handleClose={handleCloseDel} name={name} goldprice={goldprice} goldweight={goldweight} laborCost={laborCost} goldType={goldType}  gemType={gemType} gemweight={gemweight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} onDelete={onDelete} />
+      <DelModal show={showDel} handleClose={handleCloseDel} name={name} goldPrice={goldPrice} goldWeight={goldWeight} laborCost={laborCost} type={type} barcode={barcode} imageUrl={imageUrl} totalPrice={totalPrice} jewelryPrice={jewelryPrice} gemPrice={gemPrice} onDelete={() => onDelete(id)} />
 
-      <EditModal show={showEd} handleClose={handleCloseEd} name={name} goldprice={goldprice} goldweight={goldweight} laborCost={laborCost} goldType={goldType}  gemType={gemType} gemweight={gemweight} gemPrice={gemPrice} jewelryPrice={jewelryPrice} barcode={barcode} totalPrice={totalPrice} onUpdate={(updatedData) => onUpdate(id, updatedData)} />
-
+      <EditModal show={showEd} handleClose={handleCloseEd} id={id} onUpdate={onUpdate} />
     </>
   );
 }
 
 UserTableRow.propTypes = {
   id: PropTypes.any,
-  goldprice: PropTypes.any,
+  goldPrice: PropTypes.any,
   handleClick: PropTypes.func,
   laborCost: PropTypes.any,
   name: PropTypes.any,
-  goldweight: PropTypes.any,
+  goldWeight: PropTypes.any,
   selected: PropTypes.any,
   onDelete: PropTypes.func,
   onUpdate: PropTypes.func,
@@ -152,8 +136,9 @@ UserTableRow.propTypes = {
   jewelryPrice: PropTypes.number,
   goldType: PropTypes.string,
   gemType: PropTypes.string,
-  gemweight: PropTypes.number,
+  gemWeight: PropTypes.number,
   gemPrice: PropTypes.number,
   totalPrice: PropTypes.number,
-  type: PropTypes.string
+  type: PropTypes.string,
+  imageUrl: PropTypes.string,
 };

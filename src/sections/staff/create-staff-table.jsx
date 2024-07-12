@@ -14,10 +14,10 @@ import { toast } from 'react-toastify';
 
 function StaffForm({ open, onClose, onSubmit }) {
     const initialFormState = {
-        roleId: '3', // Start with blank role
+        roleId: '3', // Default to 'Staff' role
         username: '',
         fullName: '',
-        gender: '', 
+        gender: '', // Assuming gender is not required
         email: '',
         password: ''
     };
@@ -29,32 +29,11 @@ function StaffForm({ open, onClose, onSubmit }) {
         setFormState({ ...formState, [e.target.name]: e.target.value });
     };
 
-    const validate = () => {
-        const newErrors = {};
-        if (!formState.username) newErrors.username = 'Username is required';
-        if (!formState.fullName) newErrors.fullName = 'Full Name is required';
-        if (!formState.email) {
-            newErrors.email = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(formState.email)) {
-            newErrors.email = 'Email address is invalid';
-        }
-        if (!formState.password) newErrors.password = 'Password is required';
-        if (!formState.gender) newErrors.gender = 'Gender is required';
-        if (!formState.roleId) newErrors.roleId = 'Role is required';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (validate()) {
-            onSubmit(formState);
-            //toast.success('New staff added successfully');
-            setFormState(initialFormState);
-            onClose();
-        } else {
-            toast.error('Please fix the validation errors');
-        }
+        onSubmit(formState);
+        setFormState(initialFormState);
+        onClose();
     };
 
     return (
@@ -124,14 +103,15 @@ function StaffForm({ open, onClose, onSubmit }) {
                         onChange={handleChange}
                         error={!!errors.roleId}
                     >
-                        <MenuItem value="">Select Role</MenuItem>
                         <MenuItem value="3">Staff</MenuItem>
+                        <MenuItem value="1">Admin</MenuItem>
                         <MenuItem value="2">Manager</MenuItem>
                     </Select>
                     {errors.roleId && <p style={{ color: 'red', margin: '5px 0' }}>{errors.roleId}</p>}
                 </FormControl>
 
-                <TextField
+                {/* Assuming gender is optional */}
+                {/* <TextField
                     margin="dense"
                     name="gender"
                     label="Gender"
@@ -139,10 +119,7 @@ function StaffForm({ open, onClose, onSubmit }) {
                     fullWidth
                     value={formState.gender}
                     onChange={handleChange}
-                    error={!!errors.gender}
-                    helperText={errors.gender}
-                    InputProps={{ style: { marginBottom: 10 } }}
-                />
+                /> */}
 
             </DialogContent>
             <DialogActions>
