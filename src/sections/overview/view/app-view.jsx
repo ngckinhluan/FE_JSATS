@@ -182,22 +182,22 @@ export default function AppView() {
                 '2024',
               ],
               series: [
+                // {
+                //   name: 'This Week',
+                //   type: 'line',
+                //   fill: 'area',
+                //   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                // },
                 {
-                  name: 'Team A',
+                  name: 'This Month',
                   type: 'line',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
                   fill: 'gradient',
                   data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
                 },
                 {
-                  name: 'Team C',
+                  name: 'Last Month',
                   type: 'line',
-                  fill: 'solid',
+                  fill: 'area',
                   data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
                 },
               ],
@@ -236,7 +236,7 @@ export default function AppView() {
             }}
           />
         </Grid> */}
-
+{/* 
         <Grid xs={12} md={6} lg={8}>
           <AppNewsUpdate
             title="News Update"
@@ -248,9 +248,9 @@ export default function AppView() {
               postedAt: faker.date.recent(),
             }))}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppOrderTimeline
             title="Order Timeline"
             list={[...Array(5)].map((_, index) => ({
@@ -266,7 +266,7 @@ export default function AppView() {
               time: faker.date.past(),
             }))}
           />
-        </Grid>
+        </Grid> */}
 
         {/* <Grid xs={12} md={6} lg={4}>
           <AppTrafficBySite
