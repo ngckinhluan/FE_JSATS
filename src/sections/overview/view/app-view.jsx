@@ -36,6 +36,8 @@ export default function AppView() {
     }
   }, []);
 
+  
+
   useEffect(() => {
     fetch('http://localhost:5188/api/Dashboard/NewCustomers')
       .then((response) => response.json())
@@ -165,20 +167,19 @@ export default function AppView() {
         <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits
             title="Customers"
-            // subheader="(+43%) than last year"
             chart={{
               labels: [
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
+                '2014',
+                '2015',
+                '2016',
+                '2017',
+                '2018',
+                '2019',
+                '2010',
+                '2021',
+                '2022',
+                '2023',
+                '2024',
               ],
               series: [
                 {
@@ -221,8 +222,6 @@ export default function AppView() {
             }}
           />
         </Grid>
-
-
 
         {/* <Grid xs={12} md={6} lg={4}>
           <AppCurrentSubject
@@ -313,5 +312,3 @@ export default function AppView() {
     </Container>
   );
 }
-
-
