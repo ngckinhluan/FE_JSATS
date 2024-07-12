@@ -52,11 +52,11 @@ export default function StaffView() {
     fetchStaff();
   }, []);
 
-  const getStaff = async () => {
-    const res = await axios.get('http://localhost:5188/api/User/GetUsers');
-    const filteredStaff = res.data.filter((user) => user.roleName === 'Staff');
-    setStaff(filteredStaff);
-  };
+  // const getStaff = async () => {
+  //   const res = await axios.get('http://localhost:5188/api/User/GetUsers');
+  //   const filteredStaff = res.data.filter((user) => user.roleName === 'Staff');
+  //   setStaff(filteredStaff);
+  // };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -120,13 +120,9 @@ export default function StaffView() {
 
       if (response.status === 200) {
         toast.success('Staff added successfully');
-<<<<<<< HEAD
         const newStaffMember = response.data; // Assuming response.data contains the new staff member object
         setStaff((prevStaff) => [...prevStaff, newStaffMember]);
          // Update state with the new staff member
-=======
-        getStaff();
->>>>>>> e1dc495147f9c1616b4a4f073b77575edd02b583
         setShowStaffForm(false); // Close the form after successful addition
         getStaff();
       } else {
