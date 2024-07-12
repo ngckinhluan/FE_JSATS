@@ -40,8 +40,7 @@ export default function StaffView() {
     const fetchStaff = async () => {
       try {
         const response = await axios.get('http://localhost:5188/api/User/GetUsers');
-        const filteredStaff = response.data.filter((user) => user.roleName === 'Staff');
-        setStaff(filteredStaff);
+        setStaff(response.data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching staff data:', error);
@@ -52,12 +51,15 @@ export default function StaffView() {
     fetchStaff();
   }, []);
 
+<<<<<<< HEAD
   // const getStaff = async () => {
   //   const res = await axios.get('http://localhost:5188/api/User/GetUsers');
   //   const filteredStaff = res.data.filter((user) => user.roleName === 'Staff');
   //   setStaff(filteredStaff);
   // };
 
+=======
+>>>>>>> f7e0af090f39fb8c98833dfa9f9891ff3edfc6fb
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -123,6 +125,10 @@ export default function StaffView() {
         const newStaffMember = response.data; // Assuming response.data contains the new staff member object
         setStaff((prevStaff) => [...prevStaff, newStaffMember]);
          // Update state with the new staff member
+<<<<<<< HEAD
+=======
+        getStaff();
+>>>>>>> f7e0af090f39fb8c98833dfa9f9891ff3edfc6fb
         setShowStaffForm(false); // Close the form after successful addition
         getStaff();
       } else {
@@ -131,30 +137,6 @@ export default function StaffView() {
     } catch (error) {
       console.error('Error adding staff:', error);
       toast.error('Error adding staff');
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    try {
-      await Promise.all(
-        selected.map(async (username) => {
-          const staffMember = staff.find((member) => member.username === username);
-          if (staffMember) {
-            const response = await axios.delete(
-              `http://localhost:5188/api/User/DeleteUser/${staffMember.userId}`
-            );
-            if (response.status !== 200) {
-              throw new Error(`Failed to delete staff with username: ${username}`);
-            }
-          }
-        })
-      );
-      toast.success('Selected staff deleted successfully');
-      getStaff();
-      setSelected([]);
-    } catch (error) {
-      console.error('Error deleting selected staff:', error);
-      toast.error('Error deleting selected staff');
     }
   };
 
@@ -196,7 +178,7 @@ export default function StaffView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
-          onDeleteSelected={handleDeleteSelected}
+          onDeleteSelected={handleSelectAllClick}
         />
 
         <Scrollbar>
@@ -228,7 +210,7 @@ export default function StaffView() {
                       email={row.email}
                       roleName={row.roleName}
                       counterNumber={row.counterNumber}
-                      getStaff={getStaff} // Pass getStaff to UserTableRow
+                     
                       selected={selected.indexOf(row.username) !== -1}
                       handleClick={(event) => handleClick(event, row.username)}
                     />
