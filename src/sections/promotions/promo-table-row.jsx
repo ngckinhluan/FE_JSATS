@@ -62,6 +62,7 @@ export default function UserTableRow({
   };
 
   const onSubmit = async (updatedData) => {
+    const token = localStorage.getItem('token'); // Retrieve token from local storage
     try {
       const formattedData = {
         ...updatedData,
@@ -77,6 +78,7 @@ export default function UserTableRow({
         {
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Include token in Authorization header
           },
         }
       );
@@ -108,9 +110,15 @@ export default function UserTableRow({
   };
 
   const onDelete = async () => {
+    const token = localStorage.getItem('token'); // Retrieve token from local storage
     try {
       const res = await axios.delete(
-        `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`
+        `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in Authorization header
+          },
+        }
       );
       if (res.data === 1) {
         toast.success('Delete success');
@@ -136,8 +144,10 @@ export default function UserTableRow({
         </TableCell>
         <TableCell>{promotionId}</TableCell>
         <TableCell>{type}</TableCell>
-        <TableCell style={{width:"100px"}}>{description}</TableCell>
-        <TableCell style={{ position: "absolute", marginLeft:"25px", marginTop:"10px", width:"10px" }}>{`${discountRate}%`}</TableCell>
+        <TableCell style={{ width: '100px' }}>{description}</TableCell>
+        <TableCell
+          style={{ position: 'absolute', marginLeft: '25px', marginTop: '10px', width: '10px' }}
+        >{`${discountRate}%`}</TableCell>
         <TableCell>{formattedStartDate}</TableCell>
         <TableCell>{formattedEndDate}</TableCell>
         <TableCell align="right">
@@ -168,11 +178,11 @@ export default function UserTableRow({
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Start Date:</Typography>
-              <Typography>{startDate}</Typography>
+              <Typography>{formattedStartDate}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">End Date:</Typography>
-              <Typography>{endDate}</Typography>
+              <Typography>{formattedEndDate}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Description:</Typography>

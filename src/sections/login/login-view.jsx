@@ -1,82 +1,76 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { toast } from "react-toastify";
-import { jwtDecode } from 'jwt-decode';
-
-
+import { toast } from 'react-toastify';
+import {jwtDecode} from 'jwt-decode';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
-
+import { alpha, useTheme } from '@mui/material/styles';
+import Divider from '@mui/material/Divider';
 import { useRouter } from 'src/routes/hooks';
-
 import { bgGradient } from 'src/theme/css';
-
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
-
-
-// ----------------------------------------------------------------------
-
 export default function LoginView() {
   const theme = useTheme();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const router = useRouter();
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [counterId, setCounterId] = useState('');  
   const [showPassword, setShowPassword] = useState(false);
 
-// comment cho de dang nhap
-const handleClick = async () => {
-  try {
-    const response = await axios.post("http://localhost:5188/api/User/Login", { email, password });
-    if (response.status === 200) {
-      const {token} = response.data;
-      localStorage.setItem("TOKEN", token);
-      const decodedToken = jwtDecode(token);
-      const roleId = decodedToken.role; 
-      // localStorage.setItem("ROLE", roleId);
-      localStorage.setItem("SUB", decodedToken.sub); 
-      localStorage.setItem("NAMEID", decodedToken.nameid);
-      localStorage.setItem("EMAIL", decodedToken.email);
-      router.push('/dashboard');
-      toast.success('You have successfully logged in. Welcome!');
-    } else {
-      toast.error("Login information error");
+  const handleClick = async () => {
+    try {
+      const response = await axios.post('http://localhost:5188/api/User/Login', {
+        email,
+        password,
+        counterId,
+      });
+      if (response.status === 200) {
+        const { token, expiration } = response.data;
+        localStorage.setItem('token', token);
+        const decodedToken = jwtDecode(token);
+        localStorage.setItem('sub', decodedToken.sub);
+        localStorage.setItem('nameid', decodedToken.nameid);
+        localStorage.setItem('email', decodedToken.email);
+        localStorage.setItem('role', decodedToken.role);
+        localStorage.setItem('exp', expiration);
+        router.push('/dashboard');
+        toast.success('You have successfully logged in. Welcome!');
+      } else {
+        toast.error('Login information error');
+      }
+    } catch (e) {
+      toast.error('Error with login response');
+      console.error('Login error:', e);
     }
-  } catch (e) {
-    toast.error("Error with login response");
-  }
-}
-  // const handleClick = () => {
-  //   router.push('/dashboard');
-  // };
+  };
 
   const renderForm = (
-    
-   <>
+    <>
       <Stack spacing={3}>
         <TextField
-        onChange={(e) => setEmail(e.target.value)}
-        name="email" label="Email"  />
-
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          name="email"
+          label="Email"
+          required
+        />
         <TextField
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           name="password"
           label="Password"
-          onChange={(e) => setPassword(e.target.value)}
           type={showPassword ? 'text' : 'password'}
+          required
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -88,14 +82,11 @@ const handleClick = async () => {
           }}
         />
       </Stack>
-      
-
       <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
         <Link variant="subtitle2" underline="hover">
           Forgot password?
         </Link>
       </Stack>
-
       <LoadingButton
         fullWidth
         size="large"
@@ -105,8 +96,7 @@ const handleClick = async () => {
       >
         Login
       </LoadingButton>
-     </>
-    
+    </>
   );
 
   return (
@@ -116,7 +106,10 @@ const handleClick = async () => {
           color: alpha(theme.palette.background.default, 0.9),
           imgUrl: '/assets/background/overlay_4.jpg',
         }),
-        height: 1,
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <Logo
@@ -126,7 +119,6 @@ const handleClick = async () => {
           left: { xs: 16, md: 24 },
         }}
       />
-
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card
           sx={{
@@ -135,53 +127,14 @@ const handleClick = async () => {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Minimal</Typography>
-{/* 
-          <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Don’t have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-              Get started
-            </Link>
-          </Typography> */}
-{/* 
-          <Stack direction="row" spacing={2}>
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:google-fill" color="#DF3E30" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:facebook-fill" color="#1877F2" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-            </Button>
-          </Stack> */}
-
+          <Typography variant="h4" gutterBottom>
+            Sign in to Minimal
+          </Typography>
           <Divider sx={{ my: 3 }}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-             
+              Login with your email
             </Typography>
           </Divider>
-
           {renderForm}
         </Card>
       </Stack>

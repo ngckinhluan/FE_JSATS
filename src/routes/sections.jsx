@@ -18,11 +18,10 @@ export const GoldPricesTable = lazy(() => import('src/sections/goldprice/goldpri
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  const { isAuthenticated } = useAuth();
   const routes = useRoutes([
     {
       path: '/',
-      element: isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" replace />,
+      element: <Navigate to="/dashboard" />
     },
     {
       path: 'login',

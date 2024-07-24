@@ -1,19 +1,11 @@
-import { faker } from '@faker-js/faker';
 import React, { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-
-import Iconify from 'src/components/iconify';
-
-import AppTasks from '../app-tasks';
-import AppNewsUpdate from '../app-news-update';
-import AppOrderTimeline from '../app-order-timeline';
-import AppCurrentVisits from '../app-current-visits';
-import AppWebsiteVisits from '../app-website-visits';
+import axiosInstance from 'src/utils/axiosInstance';
 import AppWidgetSummary from '../app-widget-summary';
-import AppTrafficBySite from '../app-traffic-by-site';
-import AppCurrentSubject from '../app-current-subject';
+import AppWebsiteVisits from '../app-website-visits';
+import AppCurrentVisits from '../app-current-visits';
 import AppConversionRates from '../app-conversion-rates';
 
 // ----------------------------------------------------------------------
@@ -28,17 +20,17 @@ export default function AppView() {
   const [jewelrySalesTypes, setJewelrySalesTypes] = useState([]);
 
   useEffect(() => {
-    const sub = localStorage.getItem('SUB');
+    const sub = localStorage.getItem('sub');
     if (sub) {
       setSubject(sub);
     }
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5188/api/Dashboard/NewCustomers')
-      .then((response) => response.json())
-      .then((data) => {
-        setNewUsers(data.total || data);
+    axiosInstance
+      .get('/Dashboard/NewCustomers')
+      .then((response) => {
+        setNewUsers(response.data.total || response.data);
       })
       .catch((error) => {
         console.error('Error fetching new users:', error);
@@ -46,10 +38,10 @@ export default function AppView() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5188/api/Dashboard/TotalSoldJewelry')
-      .then((response) => response.json())
-      .then((data) => {
-        setRepeatCustomer(data.total || data);
+    axiosInstance
+      .get('/Dashboard/TotalSoldJewelry')
+      .then((response) => {
+        setRepeatCustomer(response.data.total || response.data);
       })
       .catch((error) => {
         console.error('Error fetching repeat customers:', error);
@@ -57,10 +49,10 @@ export default function AppView() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5188/api/Dashboard/TotalCustomers')
-      .then((response) => response.json())
-      .then((data) => {
-        setTotalCustomer(data.total || data);
+    axiosInstance
+      .get('/Dashboard/TotalCustomers')
+      .then((response) => {
+        setTotalCustomer(response.data.total || response.data);
       })
       .catch((error) => {
         console.error('Error fetching total customers:', error);
@@ -68,10 +60,10 @@ export default function AppView() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5188/api/Dashboard/TotalRevenueAllTime')
-      .then((response) => response.json())
-      .then((data) => {
-        setTotalRevenue(data.totalRevenue || data);
+    axiosInstance
+      .get('/Dashboard/TotalRevenueAllTime')
+      .then((response) => {
+        setTotalRevenue(response.data.totalRevenue || response.data);
       })
       .catch((error) => {
         console.error('Error fetching total revenue:', error);
@@ -79,10 +71,10 @@ export default function AppView() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5188/api/Dashboard/BestSellingJewelryTypes')
-      .then((response) => response.json())
-      .then((data) => {
-        const formattedData = data.map((item) => ({
+    axiosInstance
+      .get('/Dashboard/BestSellingJewelryTypes')
+      .then((response) => {
+        const formattedData = response.data.map((item) => ({
           label: item.jewelryTypeName,
           value: item.purchaseTime,
         }));
@@ -94,10 +86,10 @@ export default function AppView() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5188/api/Dashboard/BestSellingJewelry')
-      .then((response) => response.json())
-      .then((data) => {
-        const formattedData = data.map((item) => ({
+    axiosInstance
+      .get('/Dashboard/BestSellingJewelry')
+      .then((response) => {
+        const formattedData = response.data.map((item) => ({
           label: item.jewelryName,
           value: item.purchaseTime,
         }));
@@ -169,12 +161,6 @@ export default function AppView() {
                 '2024',
               ],
               series: [
-                // {
-                //   name: 'Team A',
-                //   type: 'line',
-                //   fill: 'solid',
-                //   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                // },
                 {
                   name: 'This Month',
                   type: 'line',

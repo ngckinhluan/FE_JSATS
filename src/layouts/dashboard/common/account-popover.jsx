@@ -44,12 +44,12 @@ export default function AccountPopover() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('TOKEN'); 
+    localStorage.removeItem('token'); 
     navigate('/login');
   };
 
-  const userDisplayName = localStorage.getItem('SUB');
-  const userEmail = localStorage.getItem('EMAIL');
+  const userDisplayName = localStorage.getItem('sub');
+  const userEmail = localStorage.getItem('email');
 
   return (
     <>
