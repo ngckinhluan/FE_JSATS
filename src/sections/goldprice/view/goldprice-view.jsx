@@ -36,8 +36,17 @@ export default function GoldPriceView() {
   }, []);
 
   const getGoldprice = async () => {
-    const res = await axios.get("http://localhost:5188/api/Price/GetGoldPrices");
-    setGoldprice(res.data);
+    const token = localStorage.getItem('token');
+    try {
+      const res = await axios.get("http://localhost:5188/api/Price/GetGoldPrices", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setGoldprice(res.data);
+    } catch (error) {
+      console.error('Error fetching gold prices:', error);
+    }
   };
 
   const handleSort = (event, id) => {

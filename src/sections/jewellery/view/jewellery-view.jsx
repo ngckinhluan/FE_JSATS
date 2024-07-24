@@ -45,9 +45,13 @@ export default function JewelleryView() {
   }, [page, rowsPerPage, filterName, filterType]);
 
   const getJew = async () => {
+    const token = localStorage.getItem('token');
     try {
       const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
-        params: { pageNumber: page + 1, pageSize: rowsPerPage, filterName, filterType }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { pageNumber: page + 1, pageSize: rowsPerPage, filterName, filterType },
       });
       const { data, totalRecord } = response.data;
       setJewList(data);
@@ -58,14 +62,21 @@ export default function JewelleryView() {
   };
 
   const getAllJew = async () => {
+    const token = localStorage.getItem('token');
     try {
       const totalResponse = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
-        params: { pageNumber: 1, pageSize: 1, filterName: '', filterType: '' }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { pageNumber: 1, pageSize: 1, filterName: '', filterType: '' },
       });
       const totalRecords = totalResponse.data.totalRecord;
 
       const response = await axios.get('http://localhost:5188/api/Jewelry/GetJewelries', {
-        params: { pageNumber: 1, pageSize: totalRecords, filterName: '', filterType: '' }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { pageNumber: 1, pageSize: totalRecords, filterName: '', filterType: '' },
       });
       setFullJewList(response.data.data);
     } catch (error) {
@@ -78,8 +89,13 @@ export default function JewelleryView() {
   }, []);
 
   const getJewTypes = async () => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.get('http://localhost:5188/api/JewelryType/GetJewelryTypes');
+      const response = await axios.get('http://localhost:5188/api/JewelryType/GetJewelryTypes', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setJewTypes(response.data);
     } catch (error) {
       console.error('Error fetching jewelry types:', error);
@@ -87,23 +103,37 @@ export default function JewelleryView() {
   };
 
   const createJew = async (newItem) => {
+    const token = localStorage.getItem('token');
     try {
-        const response = await axios.post('http://localhost:5188/api/Jewelry/CreateJewelry', newItem);
-        toast.success('Create successful!', {
-            position: 'bottom-right',
-            theme: 'colored',
-        });
-        handleClose();
-        getJew(); // Gọi hàm getJew để làm mới lại danh sách
-        getAllJew(); // Làm mới danh sách đầy đủ
+      const response = await axios.post('http://localhost:5188/api/Jewelry/CreateJewelry', newItem, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success('Create successful!', {
+        position: 'bottom-right',
+        theme: 'colored',
+      });
+      handleClose();
+      getJew();
+      getAllJew();
     } catch (error) {
-        console.error('There was an error creating the item:', error);
+      console.error('There was an error creating the item:', error);
+      toast.error('Error Create jewellery!', {
+        position: 'bottom-right',
+        theme: 'colored',
+      });
     }
   };
 
   const deleteJewellery = async (id) => {
+    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:5188/api/Jewelry/DeleteJewelry/${id}`);
+      await axios.delete(`http://localhost:5188/api/Jewelry/DeleteJewelry/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setJewList(jewList.filter((item) => item.jewelryId !== id));
       setFullJewList(fullJewList.filter((item) => item.jewelryId !== id));
       toast.success('Delete successful!', {
@@ -116,10 +146,12 @@ export default function JewelleryView() {
   };
 
   const updateJew = async (updatedData) => {
+    const token = localStorage.getItem('token');
     try {
       await axios.put(`http://localhost:5188/api/Jewelry/UpdateJewelry/${updatedData.jewelryId}`, updatedData, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
       setJewList((prevData) =>
@@ -198,7 +230,7 @@ export default function JewelleryView() {
     setPage(0);
   };
   console.log('filterType:', filterType);
-  console.log('jewList:', jewList); 
+  console.log('jewList:', jewList);
 
   const dataFiltered = applyFilter({
     inputData: fullJewList,
@@ -222,7 +254,7 @@ export default function JewelleryView() {
         </Button>
         <NewModal show={show} handleClose={handleClose} createJew={createJew} />
       </Stack>
-  
+
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
@@ -232,7 +264,7 @@ export default function JewelleryView() {
           onFilterType={handleFilterByType}
           jewTypes={jewTypes}
         />
-  
+
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
@@ -269,7 +301,7 @@ export default function JewelleryView() {
                     gemPrice={row.materials && row.materials.length > 0 && row.materials[0].gem ? row.materials[0].gem.gemPrice : ''}
                     totalPrice={row.totalPrice}
                     type={row.type}
-                    typeId={row.type ? row.type.typeId : null} 
+                    typeId={row.type ? row.type.typeId : null}
                     barcode={row.barcode}
                     jewelryPrice={row.totalPrice}
                     gemCost={row.gemCost}
@@ -278,7 +310,7 @@ export default function JewelleryView() {
                     handleClick={(event) => handleClick(event, row.name)}
                     onDelete={() => deleteJewellery(row.jewelryId)}
                     onUpdate={updateJew}
-                  />                
+                  />
                 ))}
                 <TableEmptyRows
                   height={77}
@@ -289,7 +321,7 @@ export default function JewelleryView() {
             </Table>
           </TableContainer>
         </Scrollbar>
-  
+
         <TablePagination
           component="div"
           count={totalRecords}

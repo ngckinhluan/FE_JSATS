@@ -34,7 +34,12 @@ const InvoicePreviewDialog = ({ open, onClose, billId }) => {
 
   useEffect(() => {
     if (open) {
-      axios.get(`http://localhost:5188/api/Bill/GetBillById/${billId}`)
+      const token = localStorage.getItem('token'); // Lấy token từ local storage
+      axios.get(`http://localhost:5188/api/Bill/GetBillById/${billId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Bao gồm token trong header Authorization
+        },
+      })
         .then(response => {
           setInvoiceData(response.data);
         })
@@ -66,9 +71,7 @@ const InvoicePreviewDialog = ({ open, onClose, billId }) => {
 
   if (!invoiceData) return null;
 
-  // const calculateDiscount = () => {  
-  //   return invoiceData.totalAmount  (invoiceData.totalDiscount / 100);
-  // };
+  const calculateDiscount = invoiceData.totalAmount - invoiceData.finalAmount;
 
   return (
     <>
@@ -110,7 +113,7 @@ const InvoicePreviewDialog = ({ open, onClose, billId }) => {
                   <Typography variant="h6" align="right">Total Amount:</Typography>
                   <Typography align="right">${invoiceData.totalAmount.toFixed(2)}</Typography>
                   <Typography variant="h6" align="right">Discount:</Typography>
-                  <Typography align="right">${invoiceData.totalDiscount.toFixed(2)}</Typography>
+                  <Typography align="right">${calculateDiscount.toFixed(2)}</Typography>
                   <Typography variant="h6" align="right">Final Amount:</Typography>
                   <Typography align="right">${invoiceData.finalAmount.toFixed(2)}</Typography>
                 </Grid>

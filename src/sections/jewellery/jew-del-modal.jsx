@@ -19,12 +19,12 @@ export default function DelModal({ show, handleClose, name, goldPrice, goldWeigh
           </Col>
           <Col md={7}>
             <h5 className='mb-4'>{name}</h5>
-            <p><FontAwesomeIcon icon={faWeightHanging} /> &nbsp; Gold Weight: {goldWeight}</p>
-            <p><FontAwesomeIcon icon={faMoneyBill} /> &nbsp; Gold Price: {goldPrice}</p>
-            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Labor Cost: {laborCost}</p>
-            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Jewelry Price: {jewelryPrice}</p>
-            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Gem Price: {gemPrice}</p>
-            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Total Price: {totalPrice}</p>
+            <p><FontAwesomeIcon icon={faWeightHanging} /> &nbsp; Gold Weight: {goldWeight} g</p>
+            <p><FontAwesomeIcon icon={faMoneyBill} /> &nbsp; Gold Price: {goldPrice} $</p>
+            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Labor Cost: {laborCost} $</p>
+            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Jewelry Price: {jewelryPrice} $</p>
+            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Gem Price: {gemPrice} $</p>
+            <p><FontAwesomeIcon icon={faDollarSign} /> &nbsp; Total Price: {totalPrice} $</p>
             <p><FontAwesomeIcon icon={faBarcode} /> &nbsp; Barcode: {barcode}</p>
             <p><FontAwesomeIcon icon={faBarcode} /> &nbsp; Type: {type}</p>
           </Col>

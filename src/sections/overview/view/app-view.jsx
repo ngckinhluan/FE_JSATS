@@ -148,30 +148,24 @@ export default function AppView() {
             title="Customers"
             chart={{
               labels: [
-                '2014',
-                '2015',
-                '2016',
-                '2017',
-                '2018',
-                '2019',
-                '2010',
-                '2021',
-                '2022',
-                '2023',
-                '2024',
+                '1',
+                '2',
+                '3',
+                '4',
+                '5',
               ],
               series: [
                 {
                   name: 'This Month',
                   type: 'line',
                   fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
+                  data: [5, 3, 9, 2, 1],
                 },
                 {
                   name: 'Last Month',
                   type: 'line',
                   fill: 'area',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+                  data: [6, 8, 3, 2, 7],
                 },
               ],
             }}

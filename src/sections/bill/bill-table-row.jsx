@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-
+import { format } from 'date-fns';
 
 import Iconify from 'src/components/iconify';
-import InvoicePreviewDialog from './bill-preview-dialog'; // Adjust the path as needed
-
-// ----------------------------------------------------------------------
+import InvoicePreviewDialog from './bill-preview-dialog'; 
 
 export default function UserTableRow({
   selected,
@@ -20,6 +18,8 @@ export default function UserTableRow({
   saleDate,
   totalAmount,
   handleClick,
+  customerName,
+  staffName
 }) {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -40,23 +40,16 @@ export default function UserTableRow({
     setDialogOpen(false);
   };
 
+  const formattedDate = format(new Date(saleDate), 'dd/MM/yyyy HH:mm:ss');
+
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
-
+      <TableRow>
         <TableCell>{billId}</TableCell>
-
-        <TableCell>{customerId}</TableCell>
-
-        <TableCell>{staffId}</TableCell>
-
+        <TableCell>{customerName}</TableCell>
+        <TableCell>{staffName}</TableCell>
         <TableCell>{totalAmount}</TableCell>
-
-        <TableCell>{saleDate}</TableCell>
-
+        <TableCell>{formattedDate}</TableCell>
         <TableCell align="right">
           <Button variant="outlined" onClick={handleDialogOpen}>
             More Info
@@ -81,7 +74,9 @@ UserTableRow.propTypes = {
   customerId: PropTypes.number,
   staffId: PropTypes.number,
   totalAmount: PropTypes.number,
-  saleDate: PropTypes.instanceOf(Date),
+  saleDate: PropTypes.string,
   handleClick: PropTypes.func,
   selected: PropTypes.any,
+  customerName: PropTypes.string,
+  staffName: PropTypes.string
 };

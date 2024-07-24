@@ -21,6 +21,9 @@ function descendingComparator(a, b, orderBy) {
   if (b[orderBy] === null) {
     return -1;
   }
+  if (orderBy === 'saleDate') {
+    return new Date(b[orderBy]) - new Date(a[orderBy]);
+  }
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -29,6 +32,7 @@ function descendingComparator(a, b, orderBy) {
   }
   return 0;
 }
+
 export function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
