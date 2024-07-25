@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('TOKEN');
+    const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
     }
@@ -23,17 +23,16 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
-  const contextValue = useMemo(() => ({
-    isAuthenticated,
-    login,
-    logout,
-  }), [isAuthenticated]);
-
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      isAuthenticated,
+      login,
+      logout,
+    }),
+    [isAuthenticated]
   );
+
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 AuthProvider.propTypes = {

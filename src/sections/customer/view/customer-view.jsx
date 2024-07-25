@@ -9,7 +9,7 @@ import UserTableRow from '../customer-table-row';
 import UserTableHead from '../customer-table-head';
 import CustomerForm from '../create-customer-table';
 import UserTableToolbar from '../customer-table-toolbar';
-import { applyFilter, getComparator } from '../utils'; // Import các hàm từ utils.js
+import { applyFilter, getComparator } from '../utils';
 
 export default function CustomerPage() {
   const [customer, setCustomer] = useState([]);
@@ -30,8 +30,12 @@ export default function CustomerPage() {
   }, [pageNumber, pageSize, filterName]);
 
   const getCustomer = async () => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.get(`http://localhost:5188/api/Customer/GetCustomers`, {
+      const response = await axios.get('http://localhost:5188/api/Customer/GetCustomers', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         params: { pageNumber, pageSize, filterName }
       });
       const { data, totalPage, totalRecord } = response.data;
@@ -98,10 +102,15 @@ export default function CustomerPage() {
   };
 
   const handleDeleteSelected = async () => {
+    const token = localStorage.getItem('token');
     try {
       await Promise.all(
         selected.map(customerId =>
-          axios.delete(`http://localhost:5188/api/Customer/DeleteCustomer/${customerId}`)
+          axios.delete(`http://localhost:5188/api/Customer/DeleteCustomer/${customerId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
         )
       );
       toast.success('Delete successful!', {
@@ -144,7 +153,12 @@ export default function CustomerPage() {
   };
 
   const handleNewCustomerClick = (newCustomerData) => {
-    axios.post("http://localhost:5188/api/Customer/CreateCustomer", newCustomerData)
+    const token = localStorage.getItem('token');
+    axios.post("http://localhost:5188/api/Customer/CreateCustomer", newCustomerData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(() => {
         setShowCustomerForm(false);
         getCustomer();

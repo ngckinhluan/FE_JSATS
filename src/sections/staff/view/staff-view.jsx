@@ -35,21 +35,42 @@ export default function StaffView() {
   const [showStaffForm, setShowStaffForm] = useState(false);
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentStaff, setCurrentStaff] = useState(null);
+
+  // Get JWT token from localStorage
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const response = await axios.get('http://localhost:5188/api/User/GetUsers');
-        setStaff(response.data);
-        setLoading(false);
+        const response = await axios.get('http://localhost:5188/api/User/GetUsers', {
+          headers: { Authorization: `Bearer ${token}` } // Add token to header
+        });
+        const filteredStaff = response.data.filter(user => user.roleName === 'Staff');
+        setStaff(filteredStaff);
       } catch (error) {
         console.error('Error fetching staff data:', error);
-        toast.error('Error fetching staff data');
+        toast.error(`Error fetching staff data: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchStaff();
-  }, []);
+  }, [token]);
+
+  const getStaff = async () => {
+    try {
+      const res = await axios.get('http://localhost:5188/api/User/GetUsers', {
+        headers: { Authorization: `Bearer ${token}` } // Add token to header
+      });
+      const filteredStaff = res.data.filter(user => user.roleName === 'Staff');
+      setStaff(filteredStaff);
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+      toast.error(`Error fetching staff data: ${error.message}`);
+    }
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -59,28 +80,18 @@ export default function StaffView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = staff.map((n) => n.username);
-      setSelected(newSelecteds);
-      return;
+      setSelected(staff.map(n => n.username));
+    } else {
+      setSelected([]);
     }
-    setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
+  const handleClick = (event, username) => {
+    const selectedIndex = selected.indexOf(username);
+    const newSelected = selectedIndex === -1
+      ? [...selected, username]
+      : selected.filter((_, index) => index !== selectedIndex);
+
     setSelected(newSelected);
   };
 
@@ -98,33 +109,51 @@ export default function StaffView() {
     setFilterName(event.target.value);
   };
 
-  const getStaff = async () => {
-    const res = await axios.get('http://localhost:5188/api/User/GetUsers');
-    setStaff(res.data);
-  };
-
   const handleNewStaffClick = async (newStaffData) => {
     try {
       const response = await axios.post('http://localhost:5188/api/User/AddUser', newStaffData, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` // Add token to header
         },
       });
 
       if (response.status === 200) {
         toast.success('Staff added successfully');
-        const newStaffMember = response.data; // Assuming response.data contains the new staff member object
-        setStaff((prevStaff) => [...prevStaff, newStaffMember]);
-         // Update state with the new staff member
         getStaff();
-        setShowStaffForm(false); // Close the form after successful addition
-        getStaff();
+        setShowStaffForm(false);
       } else {
         toast.error('Failed to add staff');
       }
     } catch (error) {
       console.error('Error adding staff:', error);
       toast.error('Error adding staff');
+    }
+  };
+
+
+
+  const handleDeleteSelected = async () => {
+    try {
+      await Promise.all(
+        selected.map(async (username) => {
+          const staffMember = staff.find(member => member.username === username);
+          if (staffMember) {
+            const response = await axios.delete(`http://localhost:5188/api/User/DeleteUser/${staffMember.userId}`, {
+              headers: { Authorization: `Bearer ${token}` } // Add token to header
+            });
+            if (response.status !== 200) {
+              throw new Error(`Failed to delete staff with username: ${username}`);
+            }
+          }
+        })
+      );
+      toast.success('Selected staff deleted successfully');
+      getStaff();
+      setSelected([]);
+    } catch (error) {
+      console.error('Error deleting selected staff:', error);
+      toast.error('Error deleting selected staff');
     }
   };
 
@@ -136,17 +165,15 @@ export default function StaffView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
-  const handleCloseStaffForm = () => {
-    setShowStaffForm(false);
-  };
-
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Staff</Typography>
-
         <Button
-          onClick={() => setShowStaffForm(true)}
+          onClick={() => {
+            setCurrentStaff(null); // Clear any existing staff data
+            setShowStaffForm(true);
+          }}
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
@@ -157,8 +184,12 @@ export default function StaffView() {
 
       <StaffForm
         open={showStaffForm}
-        onClose={handleCloseStaffForm}
-        onSubmit={handleNewStaffClick}
+        onClose={() => {
+          setShowStaffForm(false);
+          setCurrentStaff(null);
+        }}
+        onSubmit={currentStaff ? handleUpdateStaff : handleNewStaffClick}
+        staff={currentStaff}
       />
 
       <Card>
@@ -190,7 +221,7 @@ export default function StaffView() {
               <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map(row => (
                     <UserTableRow
                       key={row.userId}
                       userId={row.userId}
@@ -198,17 +229,19 @@ export default function StaffView() {
                       email={row.email}
                       roleName={row.roleName}
                       counterNumber={row.counterNumber}
-                     
-                      selected={selected.indexOf(row.username) !== -1}
+                      selected={selected.includes(row.username)}
                       handleClick={(event) => handleClick(event, row.username)}
+                      getStaff={getStaff}
+                      onEdit={() => {
+                        setCurrentStaff(row);
+                        setShowStaffForm(true);
+                      }} // Handle edit click
                     />
                   ))}
-
                 <TableEmptyRows
                   height={77}
                   emptyRows={emptyRows(page, rowsPerPage, staff.length)}
                 />
-
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>

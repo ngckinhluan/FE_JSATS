@@ -66,8 +66,17 @@ export default function UserTableRow({
   };
 
   const onupdateSubmit = async (updatedData) => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.put(`http://localhost:5188/api/Customer/UpdateCustomer/${updatedData.customerId}`, updatedData);
+      const response = await axios.put(
+        `http://localhost:5188/api/Customer/UpdateCustomer/${updatedData.customerId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 200) {
         handleEditClose();
         toast.success('Update successful!', {
@@ -110,8 +119,16 @@ export default function UserTableRow({
   };
 
   const handleDelete = async (id) => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.delete(`http://localhost:5188/api/Customer/DeleteCustomer/${id}`);
+      const response = await axios.delete(
+        `http://localhost:5188/api/Customer/DeleteCustomer/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 200) {
         handleDeleteClose();
         toast.success('Delete successful!', {
@@ -173,7 +190,7 @@ export default function UserTableRow({
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6">Full Name:</Typography>
+              <Typography variant="h6">User Name:</Typography>
               <Typography>{userName}</Typography>
             </Grid>
             <Grid item xs={12}>
@@ -185,7 +202,7 @@ export default function UserTableRow({
               <Typography>{address}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Address:</Typography>
+              <Typography variant="h6">Email:</Typography>
               <Typography>{email}</Typography>
             </Grid>
             <Grid item xs={12}>
@@ -248,7 +265,7 @@ export default function UserTableRow({
         open={deleteOpen}
         onClose={handleDeleteClose}
         onDelete={handleDelete}
-        customer={{ customerId, fullName, address, phone, point, gender }}
+        customer={{ customerId, fullName, userName, address, phone, point, gender }}
       />
     </>
   );

@@ -36,7 +36,7 @@ export default function Nav({ openNav, onCloseNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const userDisplayName = localStorage.getItem('SUB');
+  const userDisplayName = localStorage.getItem('sub');
 
   const renderAccount = (
     <Box

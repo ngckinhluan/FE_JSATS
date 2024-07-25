@@ -11,6 +11,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import Divider from '@mui/material/Divider'; // Added import
 
 // import { promotion, addPromotion } from 'src/_mock/promotion';
 
@@ -50,8 +51,18 @@ export default function PromotionView() {
   }, []);
 
   const getPromotion = async () => {
-    const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions');
-    setPromotion(res.data);
+    const token = localStorage.getItem('token'); 
+    try {
+      const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions', {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+      setPromotion(res.data);
+    } catch (error) {
+      toast.error('Error fetching promotions');
+      console.error('Error fetching promotions:', error);
+    }
   };
 
   const handleSort = (event, id) => {
@@ -115,46 +126,55 @@ export default function PromotionView() {
     setShowPromotionForm(false);
   };
 
-  const nameid = localStorage.getItem('NAMEID');
+  const nameid = localStorage.getItem('nameid');
 
   const handleNewPromotionClick = async (newPromotionData) => {
-    // Check if user is authorized to create promotions (e.g., only manager with nameid === 2)
     if (nameid !== '2') {
       toast.error('Only manager can add promotion!');
-      return; // Exit function early if not authorized
+      return;
     }
 
-    // Format date fields to ISO string format
     const formattedData = {
       ...newPromotionData,
       startDate: new Date(newPromotionData.startDate).toISOString(),
       endDate: new Date(newPromotionData.endDate).toISOString(),
     };
 
+    const token = localStorage.getItem('token'); 
     try {
-      // Send POST request to create new promotion
       const res = await axios.post(
         `http://localhost:5188/api/Promotion/AddNewPromotion?userId=${nameid}`,
-        formattedData
+        formattedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          },
+        }
       );
 
-      // Handle response based on server's success or failure
       if (res.data === 1) {
         toast.success('Create promotion success');
-        getPromotion(); // Refresh promotions list
+        getPromotion();
       } else {
         toast.error('Create promotion fail');
       }
     } catch (error) {
       toast.error('Error creating promotion');
+      console.error('Error creating promotion:', error);
     }
 
-    // Close the promotion form after submission
     setShowPromotionForm(false);
   };
+
   // const handleDeletePromotionClick = async (promotionId) => {
+  //   const token = localStorage.getItem('token');
   //   const res = await axios.delete(
-  //     `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`
+  //     `http://localhost:5188/api/Promotion/DeletePromotion?id=${promotionId}`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     }
   //   );
   //   if (res.data === 1) {
   //     toast.success('Delete promotion success');
@@ -165,6 +185,7 @@ export default function PromotionView() {
   // };
 
   // const handleUpdatePromotionClick = async (updatedData) => {
+  //   const token = localStorage.getItem('token');
   //   const formattedData = {
   //     ...updatedData,
   //     startDate: new Date(updatedData.startDate).toISOString(),
@@ -172,7 +193,12 @@ export default function PromotionView() {
   //   };
   //   const res = await axios.put(
   //     `http://localhost:5188/api/Promotion/UpdatePromotion?id=${updatedData.promotionId}`,
-  //     formattedData
+  //     formattedData,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     }
   //   );
   //   if (res.data === 1) {
   //     toast.success('Edit promotion success');

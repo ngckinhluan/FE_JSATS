@@ -23,26 +23,41 @@ import InvoiceTemplate from '../bill-form';
 export default function BillPage() {
   const [bill, setBill] = useState([]);
   const [page, setPage] = useState(0);
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState('desc'); 
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('saleDate'); 
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [showBillForm, setShowBillForm] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchBillData() {
+    const fetchBillData = async () => {
+      const token = localStorage.getItem('token'); 
+      setLoading(true);
+      console.log(`Fetching data for page: ${page + 1}, rows per page: ${rowsPerPage}`);
       try {
-        const response = await fetch('http://localhost:5188/api/Bill/GetBills?pageNumber=1&pageSize=5');
+        const response = await fetch(`http://localhost:5188/api/Bill/GetBills`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, 
+          }
+        });
         const data = await response.json();
-        setBill(data.data); // Assuming 'data' contains the array of bills
+        console.log('Data received:', data);
+        setBill(data.data);
+        setTotalCount(data.totalRecord);
       } catch (error) {
         console.error('Error fetching bill data:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
     fetchBillData();
-  }, []);
+  }, [page, rowsPerPage]); // Thêm page và rowsPerPage vào dependencies để fetch dữ liệu khi trang hoặc số dòng thay đổi
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -98,6 +113,8 @@ export default function BillPage() {
     filterName,
   });
 
+  const dataPaginated = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   const notFound = !dataFiltered.length && !!filterName;
 
   const handleCloseBillForm = () => {
@@ -141,25 +158,22 @@ export default function BillPage() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                {loading ? (
+                  <tr><td colSpan={6}><Typography>Loading...</Typography></td></tr>
+                ) : (
+                  dataPaginated.map((row) => (
                     <UserTableRow
-                      key={row.id}
+                      key={row.billId}
                       billId={row.billId}
-                      staffId={row.staffName}
-                      customerId={row.customerName}
+                      staffName={row.staffName}
+                      customerName={row.customerName}
                       totalAmount={row.totalAmount}
                       saleDate={row.saleDate}
                       selected={selected.indexOf(row.billId) !== -1}
                       handleClick={(event) => handleClick(event, row.billId)}
                     />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, bill.length)}
-                />
+                  ))
+                )}
 
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
@@ -170,7 +184,7 @@ export default function BillPage() {
         <TablePagination
           page={page}
           component="div"
-          count={bill.length}
+          count={dataFiltered.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5]}
