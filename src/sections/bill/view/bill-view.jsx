@@ -34,7 +34,7 @@ export default function BillPage() {
 
   useEffect(() => {
     const fetchBillData = async () => {
-      const token = localStorage.getItem('token'); // Lấy token từ local storage
+      const token = localStorage.getItem('token'); 
       setLoading(true);
       console.log(`Fetching data for page: ${page + 1}, rows per page: ${rowsPerPage}`);
       try {
@@ -42,7 +42,7 @@ export default function BillPage() {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Bao gồm token trong header Authorization
+            'Authorization': `Bearer ${token}`, 
           }
         });
         const data = await response.json();
