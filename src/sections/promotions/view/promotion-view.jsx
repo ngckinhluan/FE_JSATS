@@ -51,11 +51,11 @@ export default function PromotionView() {
   }, []);
 
   const getPromotion = async () => {
-    const token = localStorage.getItem('token'); // Retrieve token from local storage
+    const token = localStorage.getItem('token'); 
     try {
       const res = await axios.get('http://localhost:5188/api/Promotion/GetPromotions', {
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in Authorization header
+          Authorization: `Bearer ${token}`, 
         },
       });
       setPromotion(res.data);
@@ -126,7 +126,7 @@ export default function PromotionView() {
     setShowPromotionForm(false);
   };
 
-  const nameid = localStorage.getItem('NAMEID');
+  const nameid = localStorage.getItem('nameid');
 
   const handleNewPromotionClick = async (newPromotionData) => {
     if (nameid !== '2') {
@@ -140,14 +140,14 @@ export default function PromotionView() {
       endDate: new Date(newPromotionData.endDate).toISOString(),
     };
 
-    const token = localStorage.getItem('token'); // Retrieve token from local storage
+    const token = localStorage.getItem('token'); 
     try {
       const res = await axios.post(
         `http://localhost:5188/api/Promotion/AddNewPromotion?userId=${nameid}`,
         formattedData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in Authorization header
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
